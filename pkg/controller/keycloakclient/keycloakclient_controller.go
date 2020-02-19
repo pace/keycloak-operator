@@ -7,6 +7,7 @@ import (
 	"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	"github.com/keycloak/keycloak-operator/pkg/common"
+	"github.com/google/uuid"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -170,7 +171,7 @@ func (r *ReconcileKeycloakClient) Reconcile(request reconcile.Request) (reconcil
 // Fills the CR with default values. Nils are not acceptable for Kubernetes.
 func (r *ReconcileKeycloakClient) adjustCrDefaults(cr *kc.KeycloakClient) {
 	if cr.Spec.Client.ID == "" {
-		cr.Spec.Client.ID = cr.Namespace + "-" + cr.Name
+		cr.Spec.Client.ID = uuid.New().String()
 		log.Info(fmt.Sprintf("client ID is not specified, using %v", cr.Spec.Client.ID))
 	}
 	if cr.Spec.Client.Attributes == nil {
