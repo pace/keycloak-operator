@@ -37,6 +37,16 @@ spec:
               items:
                 type: string
               type: array
+            startupScript:
+              description: Controls external Ingress/Route settings.
+              properties:
+                enabled:
+                  description: If set to true, the Operator will create a ConfigMap that can contain
+                    a custom script to modify keycloak or do other magic
+                  type: boolean
+                content:
+                  type: string
+              type: object
             externalAccess:
               description: Controls external Ingress/Route settings.
               properties:
