@@ -143,6 +143,11 @@ func (i *ClusterState) Read(context context.Context, cr *kc.Keycloak, controller
 		}
 	}
 
+	err = i.readKeycloakStartupConfigMapCurrentState(context, cr, controllerClient)
+	if err != nil {
+		return err
+	}
+
 	// Read other things
 	return nil
 }
