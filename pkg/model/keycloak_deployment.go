@@ -305,7 +305,7 @@ func KeycloakVolumes(cr *v1alpha1.Keycloak) []v1.Volume {
 	}
 
 	if cr.Spec.StartupScript.Enabled {
-		defaultMode := int32(365)
+		defaultMode := int32(0365)
 
 		volumes = append(volumes, v1.Volume{
 			Name: "keycloak-startup",
