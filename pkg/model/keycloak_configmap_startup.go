@@ -17,7 +17,7 @@ func GetStartupScript(cr *kc.Keycloak) map[string]string {
 func KeycloakConfigMapStartup(cr *kc.Keycloak) *v1.ConfigMap {
 	return &v1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta {
-			Name:        ApplicationName + "-Startup",
+			Name:        ApplicationName + "-startup",
 			Namespace:   cr.Namespace,
 		},
 		Data: GetStartupScript(cr),

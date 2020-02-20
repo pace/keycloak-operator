@@ -310,7 +310,7 @@ func KeycloakVolumes(cr *v1alpha1.Keycloak) []v1.Volume {
 			VolumeSource: v1.VolumeSource{
 				ConfigMap: &v1.ConfigMapVolumeSource{
 					LocalObjectReference: v1.LocalObjectReference{
-						Name: ApplicationName + "-Startup",
+						Name: ApplicationName + "-startup",
 					},
 				},
 			},
