@@ -413,6 +413,22 @@ func (i *ClusterState) readKeycloakRouteCurrentState(context context.Context, cr
 	return nil
 }
 
+func (i *ClusterState) readKeycloakStartupConfigMapCurrentState(context context.Context, cr *kc.Keycloak, controllerClient client.Client) error {
+	keycloakStartupConfigMap := model.KeycloakConfigMapStartup(cr)
+	keycloakStartupConfigMapSelector := model.KeycloakConfigMapStartupSelector(cr)
+
+	err := controllerClient.Get(context, keycloakStartupConfigMapSelector, keycloakStartupConfigMap)
+	if err != nil {
+		if !apiErrors.IsNotFound(err) {
+			return err
+		}
+	} else {
+		i.KeycloakStartupConfigMap = keycloakStartupConfigMap.DeepCopy()
+		cr.UpdateStatusSecondaryResources(i.KeycloakStartupConfigMap.Kind, i.KeycloakStartupConfigMap.Name)
+	}
+	return nil
+}
+
 func (i *ClusterState) readKeycloakIngressCurrentState(context context.Context, cr *kc.Keycloak, controllerClient client.Client) error {
 	keycloakIngress := model.KeycloakIngress(cr)
 	keycloakIngressSelector := model.KeycloakIngressSelector(cr)

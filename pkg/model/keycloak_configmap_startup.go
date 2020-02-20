@@ -4,6 +4,7 @@ import (
 	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 
@@ -29,4 +30,11 @@ func KeycloakConfigMapStartupReconiled(cr *kc.Keycloak, currentState *v1.ConfigM
 	reconciled := currentState.DeepCopy()
 	reconciled.Data = GetStartupScript(cr)
 	return reconciled
+}
+
+func KeycloakConfigMapStartupSelector(cr *kc.Keycloak) client.ObjectKey {
+	return client.ObjectKey{
+		Name:      ApplicationName + "-startup",
+		Namespace: cr.Namespace,
+	}
 }
