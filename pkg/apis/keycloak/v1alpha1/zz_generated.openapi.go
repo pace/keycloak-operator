@@ -576,7 +576,9 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakSpec(ref common.ReferenceCallback
 										Type:   []string{"string"},
 										Format: "",
 									},
+								},
 							},
+						},
 					},
 					"startupScript": {
 						SchemaProps: spec.SchemaProps{
