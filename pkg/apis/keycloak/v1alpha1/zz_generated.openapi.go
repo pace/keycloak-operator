@@ -565,6 +565,21 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakSpec(ref common.ReferenceCallback
 							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalAccess"),
 						},
 					},
+					"extraEnv": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Enables to pass extra Environment variables to the keycloak instance",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Type:   []string{"string"},
+										Format: "",
+									},
+								},
+							},
+						},
+					},
 					"startupScript": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Controls ConfigMap creation for startup",
