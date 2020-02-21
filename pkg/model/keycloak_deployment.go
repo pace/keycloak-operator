@@ -295,9 +295,16 @@ func KeycloakVolumeMounts(cr *v1alpha1.Keycloak, extensionsPath string) []v1.Vol
 
 	if !cr.Spec.ServingCertDisabled {
 		volumeMounts = append(volumeMounts, v1.VolumeMount{
-			Name:
-			ServingCertSecretName,
-			MountPath: "/etc/x509/https",
+			Name: 		ServingCertSecretName,
+			MountPath: 	"/etc/x509/https",
+		})
+	}
+
+	if cr.Spec.StartupScript.Enabled {
+		volumeMounts = append(volumeMounts, v1.VolumeMount{
+			Name: "keycloak-startup",
+			ReadOnly: true,
+			MountPath: "/opt/jboss/startup-scripts",
 		})
 	}
 
@@ -313,6 +320,22 @@ func KeycloakVolumes(cr *v1alpha1.Keycloak) []v1.Volume {
 				EmptyDir: &v1.EmptyDirVolumeSource{},
 			},
 		},
+	}
+
+	if cr.Spec.StartupScript.Enabled {
+		defaultMode := int32(0365)
+
+		volumes = append(volumes, v1.Volume{
+			Name: "keycloak-startup",
+			VolumeSource: v1.VolumeSource{
+				ConfigMap: &v1.ConfigMapVolumeSource{
+					LocalObjectReference: v1.LocalObjectReference{
+						Name: ApplicationName + "-startup",
+					},
+					DefaultMode: &defaultMode,
+				},
+			},
+		})
 	}
 
 	if !cr.Spec.ServingCertDisabled {

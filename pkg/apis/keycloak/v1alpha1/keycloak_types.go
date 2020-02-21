@@ -26,6 +26,9 @@ type KeycloakSpec struct {
 	// Enables to pass extra Environment variables to the keycloak instance
 	// +optional
 	ExtraEnv map[string]string `json:"extraEnv,omitempty"`
+	// Controls ConfigMap creation for startup
+	// +optional
+	StartupScript KeycloakStartupScript `json:"startupScript,omitempty"`
 	// Controls external database settings.
 	// Using an external database requires providing a secret containing credentials
 	// as well as connection details. Here's an example of such secret:
@@ -62,14 +65,17 @@ type KeycloakSpec struct {
 	PodDisruptionBudget PodDisruptionBudgetConfig `json:"podDisruptionBudget,omitempty"`
 }
 
-type ServingCertSecretName struct {
-
+type KeycloakStartupScript struct {
+	// If set to true, the Operator will create a ConfigMap that can contain
+	// a custom script to modify keycloak or do other magic
+	Enabled bool   `json:"enabled,omitempty"`
+	Content string `json:"content,omitempty"`
 }
 
 type KeycloakExternalAccess struct {
 	// If set to true, the Operator will create an Ingress or a Route
 	// pointing to Keycloak.
-	Enabled 	  bool 					 `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty"`
 
 	// further settings to customize our ingress further
 	Annotations   map[string]string      `json:"annotations,omitempty"`

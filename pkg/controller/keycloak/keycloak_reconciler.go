@@ -42,6 +42,11 @@ func (i *KeycloakReconciler) Reconcile(clusterState *common.ClusterState, cr *kc
 	desired = desired.AddAction(i.getKeycloakDeploymentOrRHSSODesiredState(clusterState, cr))
 	i.reconcileExternalAccess(&desired, clusterState, cr)
 	desired = desired.AddAction(i.getPodDisruptionBudgetDesiredState(clusterState, cr))
+
+	if cr.Spec.StartupScript.Enabled {
+		desired = desired.AddAction(i.getKeycloakStartupScriptDesiredState(clusterState, cr))
+	}
+
 	return desired
 }
 
@@ -358,4 +363,19 @@ func (i *KeycloakReconciler) getPodDisruptionBudgetDesiredState(clusterState *co
 		}
 	}
 	return nil
+}
+
+
+func (i *KeycloakReconciler) getKeycloakStartupScriptDesiredState(clusterState *common.ClusterState, cr *kc.Keycloak) common.ClusterAction {
+	if clusterState.KeycloakStartupConfigMap == nil {
+		return common.GenericCreateAction{
+			Ref: model.KeycloakConfigMapStartup(cr),
+			Msg: "Create Keycloak Startup ConfigMap",
+		}
+	}
+
+	return common.GenericUpdateAction{
+		Ref: model.KeycloakConfigMapStartupReconiled(cr, clusterState.KeycloakStartupConfigMap),
+		Msg: "Update Keycloak Startup ConfigMap",
+	}
 }
