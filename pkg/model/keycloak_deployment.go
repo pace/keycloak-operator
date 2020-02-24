@@ -188,7 +188,7 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 							VolumeMounts: KeycloakVolumeMounts(cr, KeycloakExtensionPath),
               				Env: getKeycloakEnv(cr, dbSecret),
 							LivenessProbe: &v1.Probe{
-								InitialDelaySeconds: 60,
+								InitialDelaySeconds: 90,
 								TimeoutSeconds:      1,
 								Handler: v1.Handler{
 									HTTPGet: &v1.HTTPGetAction{
@@ -200,7 +200,7 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 							},
 							ReadinessProbe: &v1.Probe{
 								TimeoutSeconds:      1,
-								InitialDelaySeconds: 10,
+								InitialDelaySeconds: 15,
 								Handler: v1.Handler{
 									HTTPGet: &v1.HTTPGetAction{
 										Path:   "/auth/realms/master",
