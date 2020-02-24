@@ -255,7 +255,7 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 			},
 			VolumeMounts: KeycloakVolumeMounts(cr, KeycloakExtensionPath),
 			LivenessProbe: &v1.Probe{
-				InitialDelaySeconds: 60,
+				InitialDelaySeconds: 90,
 				TimeoutSeconds:      1,
 				Handler: v1.Handler{
 					HTTPGet: &v1.HTTPGetAction{
@@ -267,7 +267,7 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 			},
 			ReadinessProbe: &v1.Probe{
 				TimeoutSeconds:      1,
-				InitialDelaySeconds: 10,
+				InitialDelaySeconds: 15,
 				Handler: v1.Handler{
 					HTTPGet: &v1.HTTPGetAction{
 						Path:   "/auth/realms/master",
