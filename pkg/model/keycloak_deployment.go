@@ -9,9 +9,17 @@ import (
 	v13 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+const (
+	LivenessProbeInitialDelay  = 30
+	ReadinessProbeInitialDelay = 40
+	//10s (curl) + 10s (curl) + 2s (just in case)
+	ProbeTimeoutSeconds         = 22
+	ProbeTimeBetweenRunsSeconds = 30
+)
+
 
 func GetServiceEnvVar(suffix string) string {
 	serviceName := strings.ToUpper(PostgresqlServiceName)
@@ -187,28 +195,8 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 							},
 							VolumeMounts: KeycloakVolumeMounts(cr, KeycloakExtensionPath),
               				Env: getKeycloakEnv(cr, dbSecret),
-							LivenessProbe: &v1.Probe{
-								InitialDelaySeconds: 90,
-								TimeoutSeconds:      1,
-								Handler: v1.Handler{
-									HTTPGet: &v1.HTTPGetAction{
-										Path:   "/auth/realms/master",
-										Port:   intstr.FromInt(8080),
-										Scheme: "HTTP",
-									},
-								},
-							},
-							ReadinessProbe: &v1.Probe{
-								TimeoutSeconds:      1,
-								InitialDelaySeconds: 15,
-								Handler: v1.Handler{
-									HTTPGet: &v1.HTTPGetAction{
-										Path:   "/auth/realms/master",
-										Port:   intstr.FromInt(8080),
-										Scheme: "HTTP",
-									},
-								},
-							},
+							LivenessProbe:  livenessProbe(),
+							ReadinessProbe: readinessProbe(),
 						},
 					},
 				},
@@ -254,28 +242,8 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 				},
 			},
 			VolumeMounts: KeycloakVolumeMounts(cr, KeycloakExtensionPath),
-			LivenessProbe: &v1.Probe{
-				InitialDelaySeconds: 90,
-				TimeoutSeconds:      1,
-				Handler: v1.Handler{
-					HTTPGet: &v1.HTTPGetAction{
-						Path:   "/auth/realms/master",
-						Port:   intstr.FromInt(8080),
-						Scheme: "HTTP",
-					},
-				},
-			},
-			ReadinessProbe: &v1.Probe{
-				TimeoutSeconds:      1,
-				InitialDelaySeconds: 15,
-				Handler: v1.Handler{
-					HTTPGet: &v1.HTTPGetAction{
-						Path:   "/auth/realms/master",
-						Port:   intstr.FromInt(8080),
-						Scheme: "HTTP",
-					},
-				},
-			},
+			LivenessProbe:  livenessProbe(),
+			ReadinessProbe: readinessProbe(),
 			Env: getKeycloakEnv(cr, dbSecret),
 		},
 	}
@@ -290,6 +258,10 @@ func KeycloakVolumeMounts(cr *v1alpha1.Keycloak, extensionsPath string) []v1.Vol
 			Name:      "keycloak-extensions",
 			ReadOnly:  false,
 			MountPath: extensionsPath,
+		},
+		{
+			Name:      KeycloakProbesName,
+			MountPath: "/probes",
 		},
 	}
 
@@ -318,6 +290,17 @@ func KeycloakVolumes(cr *v1alpha1.Keycloak) []v1.Volume {
 			Name: "keycloak-extensions",
 			VolumeSource: v1.VolumeSource{
 				EmptyDir: &v1.EmptyDirVolumeSource{},
+			},
+		},
+		{
+			Name: KeycloakProbesName,
+			VolumeSource: v1.VolumeSource{
+				ConfigMap: &v1.ConfigMapVolumeSource{
+					LocalObjectReference: v1.LocalObjectReference{
+						Name: KeycloakProbesName,
+					},
+					DefaultMode: &[]int32{0555}[0],
+				},
 			},
 		},
 	}
@@ -351,6 +334,40 @@ func KeycloakVolumes(cr *v1alpha1.Keycloak) []v1.Volume {
 	}
 
 	return volumes
+}
+
+func livenessProbe() *v1.Probe {
+	return &v1.Probe{
+		Handler: v1.Handler{
+			Exec: &v1.ExecAction{
+				Command: []string{
+					"/bin/sh",
+					"-c",
+					"/probes/" + LivenessProbeProperty,
+				},
+			},
+		},
+		InitialDelaySeconds: LivenessProbeInitialDelay,
+		TimeoutSeconds:      ProbeTimeoutSeconds,
+		PeriodSeconds:       ProbeTimeBetweenRunsSeconds,
+	}
+}
+
+func readinessProbe() *v1.Probe {
+	return &v1.Probe{
+		Handler: v1.Handler{
+			Exec: &v1.ExecAction{
+				Command: []string{
+					"/bin/sh",
+					"-c",
+					"/probes/" + ReadinessProbeProperty,
+				},
+			},
+		},
+		InitialDelaySeconds: ReadinessProbeInitialDelay,
+		TimeoutSeconds:      ProbeTimeoutSeconds,
+		PeriodSeconds:       ProbeTimeBetweenRunsSeconds,
+	}
 }
 
 // We allow the patch version of an image for keycloak to be increased outside of the operator on the cluster
