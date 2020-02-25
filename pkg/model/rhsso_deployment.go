@@ -9,7 +9,6 @@ import (
 	v13 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -154,28 +153,8 @@ func RHSSODeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.StatefulSe
 							},
 							VolumeMounts: KeycloakVolumeMounts(cr, RhssoExtensionPath),
 							Env:          getRHSSOEnv(cr, dbSecret),
-							LivenessProbe: &v1.Probe{
-								InitialDelaySeconds: 60,
-								TimeoutSeconds:      1,
-								Handler: v1.Handler{
-									HTTPGet: &v1.HTTPGetAction{
-										Path:   "/auth/realms/master",
-										Port:   intstr.FromInt(8080),
-										Scheme: "HTTP",
-									},
-								},
-							},
-							ReadinessProbe: &v1.Probe{
-								TimeoutSeconds:      1,
-								InitialDelaySeconds: 10,
-								Handler: v1.Handler{
-									HTTPGet: &v1.HTTPGetAction{
-										Path:   "/auth/realms/master",
-										Port:   intstr.FromInt(8080),
-										Scheme: "HTTP",
-									},
-								},
-							},
+							LivenessProbe:  livenessProbe(),
+							ReadinessProbe: readinessProbe(),
 						},
 					},
 				},
@@ -221,28 +200,8 @@ func RHSSODeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.Stateful
 				},
 			},
 			VolumeMounts: KeycloakVolumeMounts(cr, RhssoExtensionPath),
-			LivenessProbe: &v1.Probe{
-				InitialDelaySeconds: 60,
-				TimeoutSeconds:      1,
-				Handler: v1.Handler{
-					HTTPGet: &v1.HTTPGetAction{
-						Path:   "/auth/realms/master",
-						Port:   intstr.FromInt(8080),
-						Scheme: "HTTP",
-					},
-				},
-			},
-			ReadinessProbe: &v1.Probe{
-				TimeoutSeconds:      1,
-				InitialDelaySeconds: 10,
-				Handler: v1.Handler{
-					HTTPGet: &v1.HTTPGetAction{
-						Path:   "/auth/realms/master",
-						Port:   intstr.FromInt(8080),
-						Scheme: "HTTP",
-					},
-				},
-			},
+			LivenessProbe:  livenessProbe(),
+			ReadinessProbe: readinessProbe(),
 			Env: getRHSSOEnv(cr, dbSecret),
 		},
 	}
