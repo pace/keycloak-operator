@@ -100,6 +100,16 @@ spec:
             instances:
               description: Number of Keycloak instances in HA mode. Default is 1.
               type: integer
+            keycloakCli:
+              description: Gives the option to define CLI Settings
+              properties:
+                content:
+                  type: string
+                enabled:
+                  description: If set to true, the Operator will create a ConfigMap
+                    that can contain custom settings for keycloak
+                  type: boolean
+              type: object
             podDisruptionBudget:
               description: Specify PodDisruptionBudget configuration
               properties:
