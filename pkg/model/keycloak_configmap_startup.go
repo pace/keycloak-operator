@@ -29,6 +29,8 @@ func GetKeycloakCliDefaultContent(customContent string) string {
 	embed-server --std-out=echo
 	batch
 
+	echo "Running Operators default keycloak.cli configuration"
+
 	## Sets the node identifier to the node name (= pod name). Node identifiers have to be unique. They can have a
 	## maximum length of 23 characters. Thus, the chart's fullname template truncates its length accordingly.
 	/subsystem=transactions:write-attribute(name=node-identifier, value=${jboss.node.name})
