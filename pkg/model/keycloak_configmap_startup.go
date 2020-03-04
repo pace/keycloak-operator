@@ -8,13 +8,12 @@ import (
 	"strings"
 )
 
-
 func GetStartupScriptConfigMapContent(cr *kc.Keycloak) map[string]string {
 
 	startupContent := map[string]string{}
 
 	if cr.Spec.StartupScript.Enabled {
-		startupContent["mystartup.sh"] =  cr.Spec.StartupScript.Content
+		startupContent["mystartup.sh"] = cr.Spec.StartupScript.Content
 	}
 
 	if cr.Spec.KeycloakCli.Enabled {
@@ -48,23 +47,24 @@ func GetKeycloakCliDefaultContent(customContent string) string {
 
 	# custom content
 	{keycloakCliCustomContent}
+
+    run-batch
+    stop-embedded-server
 	`
 	FinalKeycloakCliDefinitionTemplate := strings.Replace(keycloakCliDefinitionTemplate, "{keycloakCliCustomContent}", customContent, -1)
-
 
 	return FinalKeycloakCliDefinitionTemplate
 }
 
 func KeycloakConfigMapStartup(cr *kc.Keycloak) *v1.ConfigMap {
 	return &v1.ConfigMap{
-		ObjectMeta: metav1.ObjectMeta {
-			Name:        ApplicationName + "-startup",
-			Namespace:   cr.Namespace,
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      ApplicationName + "-startup",
+			Namespace: cr.Namespace,
 		},
 		Data: GetStartupScriptConfigMapContent(cr),
 	}
 }
-
 
 func KeycloakConfigMapStartupReconiled(cr *kc.Keycloak, currentState *v1.ConfigMap) *v1.ConfigMap {
 	reconciled := currentState.DeepCopy()
