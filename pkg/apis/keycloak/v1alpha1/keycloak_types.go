@@ -29,6 +29,9 @@ type KeycloakSpec struct {
 	// Controls ConfigMap creation for startup
 	// +optional
 	StartupScript KeycloakStartupScript `json:"startupScript,omitempty"`
+	// Gives the option to define CLI Settings
+	// +optional
+	KeycloakCli KeycloakCli `json:"keycloakCli,omitempty"`
 	// Controls external database settings.
 	// Using an external database requires providing a secret containing credentials
 	// as well as connection details. Here's an example of such secret:
@@ -68,6 +71,13 @@ type KeycloakSpec struct {
 type KeycloakStartupScript struct {
 	// If set to true, the Operator will create a ConfigMap that can contain
 	// a custom script to modify keycloak or do other magic
+	Enabled bool   `json:"enabled,omitempty"`
+	Content string `json:"content,omitempty"`
+}
+
+type KeycloakCli struct {
+	// If set to true, the Operator will create a ConfigMap that can contain
+	// custom settings for keycloak
 	Enabled bool   `json:"enabled,omitempty"`
 	Content string `json:"content,omitempty"`
 }
