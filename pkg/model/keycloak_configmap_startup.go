@@ -14,7 +14,7 @@ func GetStartupScriptConfigMapContent(cr *kc.Keycloak) map[string]string {
 	startupContent := map[string]string{}
 
 	if cr.Spec.StartupScript.Enabled {
-		startupContent["mystartup.sh"] =  cr.Spec.KeycloakCli.Content
+		startupContent["mystartup.sh"] =  cr.Spec.StartupScript.Content
 	}
 
 	if cr.Spec.KeycloakCli.Enabled {
