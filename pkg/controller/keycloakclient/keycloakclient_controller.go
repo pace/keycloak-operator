@@ -4,9 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
-	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
-	"github.com/keycloak/keycloak-operator/pkg/common"
 	"github.com/google/uuid"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -20,6 +17,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+
+	"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
+	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
+	"github.com/keycloak/keycloak-operator/pkg/common"
 )
 
 var log = logf.Log.WithName("controller_keycloakclient")
@@ -110,7 +111,14 @@ func (r *ReconcileKeycloakClient) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{}, err
 	}
 
-	r.adjustCrDefaults(instance)
+	if r.adjustCrDefaults(instance) {
+		log.Info(fmt.Sprintf("Populating required but empty fields with generated values for client (internal identifier) %v (clientId) %v", instance.Spec.Client.ID, instance.Spec.Client.ClientID))
+		err := r.client.Update(r.context, instance)
+		if err != nil {
+			log.Info(fmt.Sprintf("Updating resource client (internal identifier) %v (clientId) %v failed", instance.Spec.Client.ID, instance.Spec.Client.ClientID))
+			return r.ManageError(instance, err)
+		}
+	}
 
 	// The client may be applicable to multiple keycloak instances,
 	// process all of them
@@ -169,17 +177,22 @@ func (r *ReconcileKeycloakClient) Reconcile(request reconcile.Request) (reconcil
 }
 
 // Fills the CR with default values. Nils are not acceptable for Kubernetes.
-func (r *ReconcileKeycloakClient) adjustCrDefaults(cr *kc.KeycloakClient) {
+// Returns true if the resource needs to be updated
+func (r *ReconcileKeycloakClient) adjustCrDefaults(cr *kc.KeycloakClient) (updateResource bool) {
 	if cr.Spec.Client.ID == "" {
 		cr.Spec.Client.ID = uuid.New().String()
+		updateResource = true
 		log.Info(fmt.Sprintf("client ID is not specified, using %v", cr.Spec.Client.ID))
 	}
 	if cr.Spec.Client.Attributes == nil {
+		updateResource = true
 		cr.Spec.Client.Attributes = make(map[string]string)
 	}
 	if cr.Spec.Client.Access == nil {
+		updateResource = true
 		cr.Spec.Client.Access = make(map[string]bool)
 	}
+	return
 }
 
 func (r *ReconcileKeycloakClient) manageSuccess(client *kc.KeycloakClient, deleted bool) error {
