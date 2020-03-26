@@ -66,6 +66,10 @@ type KeycloakSpec struct {
 	// Specify PodDisruptionBudget configuration
 	// +optional
 	PodDisruptionBudget PodDisruptionBudgetConfig `json:"podDisruptionBudget,omitempty"`
+
+	// Specify images used to override default Keycloak, KeycloakInitContainer, Postgresql and Backup images.
+	// +optional
+	ImageOverrides KeycloakRelatedImages `json:"imageOverrides,omitempty"`
 }
 
 type KeycloakStartupScript struct {
@@ -166,4 +170,11 @@ func init() {
 
 func (i *Keycloak) UpdateStatusSecondaryResources(kind string, resourceName string) {
 	i.Status.SecondaryResources = UpdateStatusSecondaryResources(i.Status.SecondaryResources, kind, resourceName)
+}
+
+type KeycloakRelatedImages struct {
+	// If set, operator will use it instead of the default Keycloak image
+	// +optional
+	Keycloak string `json:"keycloak,omitempty"`
+	ImagePullSecrets []string `json:"imagePullSecrets,omitempty"`
 }

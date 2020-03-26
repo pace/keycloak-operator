@@ -97,6 +97,19 @@ spec:
               description: Enables to pass extra Environment variables to the keycloak
                 instance
               type: object
+            imageOverrides:
+              description: Specify images used to override default Keycloak, KeycloakInitContainer,
+                Postgresql and Backup images.
+              properties:
+                imagePullSecrets:
+                  items:
+                    type: string
+                  type: array
+                keycloak:
+                  description: If set, operator will use it instead of the default
+                    Keycloak image
+                  type: string
+              type: object
             instances:
               description: Number of Keycloak instances in HA mode. Default is 1.
               type: integer
