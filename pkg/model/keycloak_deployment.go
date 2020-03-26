@@ -171,6 +171,7 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 				Spec: v1.PodSpec{
 					InitContainers: KeycloakExtensionsInitContainers(cr),
 					Volumes:        KeycloakVolumes(cr),
+					ImagePullSecrets: GetKeycloakImagePullSecrets(cr),
 					Containers: []v1.Container{
 						{
 							Name:  KeycloakDeploymentName,
@@ -203,6 +204,27 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 			},
 		},
 	}
+}
+
+func GetKeycloakImagePullSecrets(cr *v1alpha1.Keycloak) []v1.LocalObjectReference {
+	if (cr.Spec.ImageOverrides.ImagePullSecrets != nil  && len(cr.Spec.ImageOverrides.ImagePullSecrets) > 0){
+
+		imagePullSecrets := []v1.LocalObjectReference{}
+
+		if len(cr.Spec.ExtraEnv) > 0 {
+
+			for v := range cr.Spec.ExtraEnv {
+				imagePullSecrets = append(imagePullSecrets, v1.LocalObjectReference{
+					Name: v,
+				})
+			}
+		}
+
+		return imagePullSecrets
+	}
+
+
+	return []v1.LocalObjectReference{}
 }
 
 func KeycloakDeploymentSelector(cr *v1alpha1.Keycloak) client.ObjectKey {

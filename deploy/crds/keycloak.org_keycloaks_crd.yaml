@@ -101,6 +101,10 @@ spec:
               description: Specify images used to override default Keycloak, KeycloakInitContainer,
                 Postgresql and Backup images.
               properties:
+                imagePullSecrets:
+                  items:
+                    type: string
+                  type: array
                 keycloak:
                   description: If set, operator will use it instead of the default
                     Keycloak image

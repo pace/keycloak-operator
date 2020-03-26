@@ -176,4 +176,5 @@ type KeycloakRelatedImages struct {
 	// If set, operator will use it instead of the default Keycloak image
 	// +optional
 	Keycloak string `json:"keycloak,omitempty"`
+	ImagePullSecrets []string `json:"imagePullSecrets,omitempty"`
 }
