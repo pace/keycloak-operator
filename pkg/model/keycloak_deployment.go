@@ -212,7 +212,8 @@ func GetKeycloakImagePullSecrets(cr *v1alpha1.Keycloak) []v1.LocalObjectReferenc
 
 		imagePullSecrets := []v1.LocalObjectReference{}
 
-			for k,v := range cr.Spec.ImageOverrides.ImagePullSecrets {
+			for _,v := range cr.Spec.ImageOverrides.ImagePullSecrets {
+
 				imagePullSecrets = append(imagePullSecrets, v1.LocalObjectReference{
 					Name: v,
 				})
