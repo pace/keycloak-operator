@@ -174,7 +174,7 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 					Containers: []v1.Container{
 						{
 							Name:  KeycloakDeploymentName,
-							Image: KeycloakImage,
+							Image: GetKeycloakImage(cr),
 							Ports: []v1.ContainerPort{
 								{
 									ContainerPort: KeycloakPodPort,
@@ -212,6 +212,15 @@ func KeycloakDeploymentSelector(cr *v1alpha1.Keycloak) client.ObjectKey {
 	}
 }
 
+// GetKeycloakImage checks overrides property to decide the Keycloak image
+func GetKeycloakImage(cr *v1alpha1.Keycloak) string {
+	if cr.Spec.ImageOverrides.Keycloak != "" {
+		return cr.Spec.ImageOverrides.Keycloak
+	}
+
+	return KeycloakImage
+}
+
 func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.StatefulSet, dbSecret *v1.Secret) *v13.StatefulSet {
 	currentImage := GetCurrentKeycloakImage(currentState)
 
@@ -222,7 +231,7 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 	reconciled.Spec.Template.Spec.Containers = []v1.Container{
 		{
 			Name:  KeycloakDeploymentName,
-			Image: GetReconciledKeycloakImage(currentImage),
+			Image: GetReconciledKeycloakImage(cr, currentImage),
 			Ports: []v1.ContainerPort{
 				{
 					ContainerPort: KeycloakPodPort,
@@ -371,7 +380,12 @@ func readinessProbe() *v1.Probe {
 }
 
 // We allow the patch version of an image for keycloak to be increased outside of the operator on the cluster
-func GetReconciledKeycloakImage(currentImage string) string {
+func GetReconciledKeycloakImage(cr *v1alpha1.Keycloak, currentImage string) string {
+
+	if cr.Spec.ImageOverrides.Keycloak != "" {
+		return cr.Spec.ImageOverrides.Keycloak
+	}
+
 	currentImageRepo, currentImageMajor, currentImageMinor, currentImagePatch := GetImageRepoAndVersion(currentImage)
 	keycloakImageRepo, keycloakImageMajor, keycloakImageMinor, keycloakImagePatch := GetImageRepoAndVersion(KeycloakImage)
 
@@ -394,6 +408,7 @@ func GetReconciledKeycloakImage(currentImage string) string {
 	if currentImageRepo == keycloakImageRepo && currentImageMajor == keycloakImageMajor && currentImageMinor == keycloakImageMinor && currentImagePatchInt > keycloakImagePatchInt {
 		return currentImage
 	}
+
 
 	return KeycloakImage
 }
