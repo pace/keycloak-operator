@@ -19,8 +19,8 @@ rules:
       - list
       - get
       - create
-      - update
       - patch
+      - update
       - watch
       - delete
   - apiGroups:
