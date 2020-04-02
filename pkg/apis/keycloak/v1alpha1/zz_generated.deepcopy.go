@@ -5,6 +5,7 @@
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
@@ -850,6 +851,11 @@ func (in *KeycloakSpec) DeepCopyInto(out *KeycloakSpec) {
 	out.KeycloakCli = in.KeycloakCli
 	out.ExternalDatabase = in.ExternalDatabase
 	out.PodDisruptionBudget = in.PodDisruptionBudget
+	if in.Affinity != nil {
+		in, out := &in.Affinity, &out.Affinity
+		*out = new(corev1.Affinity)
+		(*in).DeepCopyInto(*out)
+	}
 	in.ImageOverrides.DeepCopyInto(&out.ImageOverrides)
 	return
 }

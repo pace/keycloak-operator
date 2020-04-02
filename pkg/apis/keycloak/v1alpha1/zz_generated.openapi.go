@@ -611,6 +611,12 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakSpec(ref common.ReferenceCallback
 							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.PodDisruptionBudgetConfig"),
 						},
 					},
+					"affinity": {
+						SchemaProps: spec.SchemaProps{
+							Description: "\n Affinity defines which nodes your pod is eligible to be scheduled on, based on labels on the node.",
+							Ref:         ref("k8s.io/api/core/v1.Affinity"),
+						},
+					},
 					"imageOverrides": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Specify images used to override default Keycloak, KeycloakInitContainer, Postgresql and Backup images.",
@@ -621,7 +627,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakSpec(ref common.ReferenceCallback
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakCli", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalAccess", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalDatabase", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRelatedImages", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStartupScript", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.PodDisruptionBudgetConfig"},
+			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakCli", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalAccess", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalDatabase", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRelatedImages", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStartupScript", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.PodDisruptionBudgetConfig", "k8s.io/api/core/v1.Affinity"},
 	}
 }
 
