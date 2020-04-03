@@ -10,6 +10,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
 )
 
 const (
@@ -171,6 +172,7 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 				Spec: v1.PodSpec{
 					InitContainers: KeycloakExtensionsInitContainers(cr),
 					Volumes:        KeycloakVolumes(cr),
+					Affinity: cr.Spec.Affinity,
 					ImagePullSecrets: GetKeycloakImagePullSecrets(cr),
 					Containers: []v1.Container{
 						{
@@ -205,6 +207,7 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 		},
 	}
 }
+
 
 func GetKeycloakImagePullSecrets(cr *v1alpha1.Keycloak) []v1.LocalObjectReference {
 
@@ -250,6 +253,7 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 	reconciled.Spec.Replicas = SanitizeNumberOfReplicas(cr.Spec.Instances, false)
 	reconciled.Spec.Template.Spec.Volumes = KeycloakVolumes(cr)
 	reconciled.Spec.Template.Spec.ImagePullSecrets = GetKeycloakImagePullSecrets(cr)
+	reconciled.Spec.Template.Spec.Affinity = cr.Spec.Affinity
 	reconciled.Spec.Template.Spec.Containers = []v1.Container{
 		{
 			Name:  KeycloakDeploymentName,

@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	v12 "github.com/openshift/api/route/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -66,7 +67,8 @@ type KeycloakSpec struct {
 	// Specify PodDisruptionBudget configuration
 	// +optional
 	PodDisruptionBudget PodDisruptionBudgetConfig `json:"podDisruptionBudget,omitempty"`
-
+	//  Affinity defines which nodes your pod is eligible to be scheduled on, based on labels on the node.
+	Affinity *corev1.Affinity `json:"affinity,omitempty"`
 	// Specify images used to override default Keycloak, KeycloakInitContainer, Postgresql and Backup images.
 	// +optional
 	ImageOverrides KeycloakRelatedImages `json:"imageOverrides,omitempty"`
