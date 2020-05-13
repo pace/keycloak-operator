@@ -385,6 +385,7 @@ func livenessProbe() *v1.Probe {
 		InitialDelaySeconds: LivenessProbeInitialDelay,
 		TimeoutSeconds:      ProbeTimeoutSeconds,
 		PeriodSeconds:       ProbeTimeBetweenRunsSeconds,
+		FailureThreshold:	 3,
 	}
 }
 
@@ -402,6 +403,7 @@ func readinessProbe() *v1.Probe {
 		InitialDelaySeconds: ReadinessProbeInitialDelay,
 		TimeoutSeconds:      ProbeTimeoutSeconds,
 		PeriodSeconds:       ProbeTimeBetweenRunsSeconds,
+		FailureThreshold:	 10,
 	}
 }
 
