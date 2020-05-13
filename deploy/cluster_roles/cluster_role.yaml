@@ -115,12 +115,15 @@ rules:
       - keycloakrealms
       - keycloakrealms/status
       - keycloakrealms/finalizers
+      - keycloakclients
+      - keycloakclients/status
+      - keycloakclients/finalizers
       - keycloakbackups
       - keycloakbackups/status
       - keycloakbackups/finalizers
-      - keycloakclients
-      - keycloakclients/status
       - keycloakusers
+      - keycloakusers/status
+      - keycloakusers/finalizers
     verbs:
       - get
       - list
