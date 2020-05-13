@@ -312,15 +312,18 @@ func (i *KeycloakReconciler) getKeycloakDeploymentOrRHSSODesiredState(clusterSta
 		}
 	}
 
-	deploymentReconciled := model.KeycloakDeploymentReconciled(cr, clusterState.KeycloakDeployment, clusterState.DatabaseSecret)
-	if isRHSSO {
-		deploymentReconciled = model.RHSSODeploymentReconciled(cr, clusterState.KeycloakDeployment, clusterState.DatabaseSecret)
-	}
+	//deploymentReconciled := model.KeycloakDeploymentReconciled(cr, clusterState.KeycloakDeployment, clusterState.DatabaseSecret)
+	//if isRHSSO {
+	//	deploymentReconciled = model.RHSSODeploymentReconciled(cr, clusterState.KeycloakDeployment, clusterState.DatabaseSecret)
+	//}
 
-	return common.GenericUpdateAction{
-		Ref: deploymentReconciled,
-		Msg: "Update " + deploymentName + " Deployment (StatefulSet)",
-	}
+
+	//return common.GenericUpdateAction{
+	//	Ref: deploymentReconciled,
+	//	Msg: "Update " + deploymentName + " Deployment (StatefulSet)",
+	//}
+
+	return nil
 }
 
 func (i *KeycloakReconciler) getKeycloakRouteDesiredState(clusterState *common.ClusterState, cr *kc.Keycloak) common.ClusterAction {
