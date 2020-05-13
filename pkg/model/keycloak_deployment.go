@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"strconv"
 	"strings"
 
@@ -14,11 +15,11 @@ import (
 )
 
 const (
-	LivenessProbeInitialDelay  = 210
-	ReadinessProbeInitialDelay = 220
-	//10s (curl) + 10s (curl) + 10s (just in case)
-	ProbeTimeoutSeconds         = 30
-	ProbeTimeBetweenRunsSeconds = 60
+	LivenessProbeInitialDelay  = 40
+	ReadinessProbeInitialDelay = 50
+	//10s (curl) + 10s (curl) + 2s (just in case)
+	ProbeTimeoutSeconds         = 22
+	ProbeTimeBetweenRunsSeconds = 30
 )
 
 
@@ -374,12 +375,10 @@ func KeycloakVolumes(cr *v1alpha1.Keycloak) []v1.Volume {
 func livenessProbe() *v1.Probe {
 	return &v1.Probe{
 		Handler: v1.Handler{
-			Exec: &v1.ExecAction{
-				Command: []string{
-					"/bin/sh",
-					"-c",
-					"/probes/" + LivenessProbeProperty,
-				},
+			HTTPGet: &v1.HTTPGetAction{
+				Path:   "/auth/realms/master",
+				Port:   intstr.FromInt(8080),
+				Scheme: "HTTP",
 			},
 		},
 		InitialDelaySeconds: LivenessProbeInitialDelay,
@@ -392,12 +391,10 @@ func livenessProbe() *v1.Probe {
 func readinessProbe() *v1.Probe {
 	return &v1.Probe{
 		Handler: v1.Handler{
-			Exec: &v1.ExecAction{
-				Command: []string{
-					"/bin/sh",
-					"-c",
-					"/probes/" + ReadinessProbeProperty,
-				},
+			HTTPGet: &v1.HTTPGetAction{
+				Path:   "/auth/realms/master",
+				Port:   intstr.FromInt(8080),
+				Scheme: "HTTP",
 			},
 		},
 		InitialDelaySeconds: ReadinessProbeInitialDelay,
