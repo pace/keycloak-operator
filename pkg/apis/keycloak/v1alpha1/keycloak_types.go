@@ -15,6 +15,10 @@ type KeycloakSpec struct {
 	// Number of Keycloak instances in HA mode. Default is 1.
 	// +optional
 	Instances int `json:"instances,omitempty"`
+	// Feature to disable ServingCertSecret
+	// which is a necessary logic to work with a TLS Ingress
+	// on a non-Openshift setup
+	ServingCertDisabled bool `json:"servingCertDisabled,omitempty"`
 	// Controls external Ingress/Route settings.
 	// +optional
 	ExternalAccess KeycloakExternalAccess `json:"externalAccess,omitempty"`
@@ -43,6 +47,15 @@ type KeycloakSpec struct {
 	// connection to the external database. The secret name is created using the following convention:
 	//       <Custom Resource Name>-db-secret
 	//
+	// Enables to pass extra Environment variables to the keycloak instance
+	// +optional
+	ExtraEnv map[string]string `json:"extraEnv,omitempty"`
+	// Controls ConfigMap creation for startup
+	// +optional
+	StartupScript KeycloakStartupScript `json:"startupScript,omitempty"`
+	// Gives the option to define CLI Settings
+	// +optional
+	KeycloakCli KeycloakCli `json:"keycloakCli,omitempty"`
 	// For more information, please refer to the Operator documentation.
 	// +optional
 	ExternalDatabase KeycloakExternalDatabase `json:"externalDatabase,omitempty"`
@@ -64,6 +77,11 @@ type KeycloakSpec struct {
 	// Name of the StorageClass for Postgresql Persistent Volume Claim
 	// +optional
 	StorageClassName *string `json:"storageClassName,omitempty"`
+	//  Affinity defines which nodes your pod is eligible to be scheduled on, based on labels on the node.
+	Affinity *corev1.Affinity `json:"affinity,omitempty"`
+	// Specify images used to override default Keycloak, KeycloakInitContainer, Postgresql and Backup images.
+	// +optional
+	ImageOverrides KeycloakRelatedImages `json:"imageOverrides,omitempty"`
 }
 
 type DeploymentSpec struct {
@@ -92,6 +110,29 @@ type KeycloakExternalAccess struct {
 	// Ingress TLS configuration is the same in both cases and it is up to the user
 	// to configure TLS section of the Ingress.
 	TLSTermination TLSTerminationType `json:"tlsTermination,omitempty"`
+
+	// further settings to customize our ingress further
+	Annotations   map[string]string `json:"annotations,omitempty"`
+	Hostname      string            `json:"hostname,omitempty"`
+	Labels        map[string]string `json:"labels,omitempty"`
+	Path          string            `json:"path,omitempty"`
+	TLSEnabled    bool              `json:"tlsEnabled,omitempty"`
+	TLSSecretName string            `json:"tlsSecretName,omitempty"`
+	TargetPort    string            `json:"targetPort,omitempty"`
+}
+
+type KeycloakCli struct {
+	// If set to true, the Operator will create a ConfigMap that can contain
+	// custom settings for keycloak
+	Enabled bool   `json:"enabled,omitempty"`
+	Content string `json:"content,omitempty"`
+}
+
+type KeycloakStartupScript struct {
+	// If set to true, the Operator will create a ConfigMap that can contain
+	// a custom script to modify keycloak or do other magic
+	Enabled bool   `json:"enabled,omitempty"`
+	Content string `json:"content,omitempty"`
 }
 
 type KeycloakExternalDatabase struct {
@@ -170,4 +211,11 @@ func init() {
 
 func (i *Keycloak) UpdateStatusSecondaryResources(kind string, resourceName string) {
 	i.Status.SecondaryResources = UpdateStatusSecondaryResources(i.Status.SecondaryResources, kind, resourceName)
+}
+
+type KeycloakRelatedImages struct {
+	// If set, operator will use it instead of the default Keycloak image
+	// +optional
+	Keycloak         string   `json:"keycloak,omitempty"`
+	ImagePullSecrets []string `json:"imagePullSecrets,omitempty"`
 }

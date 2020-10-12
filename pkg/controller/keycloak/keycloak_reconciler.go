@@ -45,6 +45,10 @@ func (i *KeycloakReconciler) Reconcile(clusterState *common.ClusterState, cr *kc
 	i.reconcileExternalAccess(&desired, clusterState, cr)
 	desired = desired.AddAction(i.getPodDisruptionBudgetDesiredState(clusterState, cr))
 
+	if cr.Spec.StartupScript.Enabled {
+		desired = desired.AddAction(i.getKeycloakStartupScriptDesiredState(clusterState, cr))
+	}
+
 	if cr.Spec.Migration.Backups.Enabled {
 		desired = desired.AddAction(i.getKeycloakBackupDesiredState(clusterState, cr))
 	}
@@ -374,5 +378,19 @@ func (i *KeycloakReconciler) getKeycloakBackupDesiredState(clusterState *common.
 	return common.GenericUpdateAction{
 		Ref: keycloakbackup,
 		Msg: "Update Postgresql Backup for Keycloak Migration",
+	}
+}
+
+func (i *KeycloakReconciler) getKeycloakStartupScriptDesiredState(clusterState *common.ClusterState, cr *kc.Keycloak) common.ClusterAction {
+	if clusterState.KeycloakStartupConfigMap == nil {
+		return common.GenericCreateAction{
+			Ref: model.KeycloakConfigMapStartup(cr),
+			Msg: "Create Keycloak Startup ConfigMap",
+		}
+	}
+
+	return common.GenericUpdateAction{
+		Ref: model.KeycloakConfigMapStartupReconiled(cr, clusterState.KeycloakStartupConfigMap),
+		Msg: "Update Keycloak Startup ConfigMap",
 	}
 }

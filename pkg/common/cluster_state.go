@@ -60,6 +60,7 @@ type ClusterState struct {
 	KeycloakDeployment              *v12.StatefulSet
 	KeycloakAdminSecret             *v1.Secret
 	KeycloakIngress                 *v1beta1.Ingress
+	KeycloakStartupConfigMap        *v1.ConfigMap
 	KeycloakRoute                   *v13.Route
 	PostgresqlServiceEndpoints      *v1.Endpoints
 	PodDisruptionBudget             *v1beta12.PodDisruptionBudget
@@ -154,6 +155,11 @@ func (i *ClusterState) Read(context context.Context, cr *kc.Keycloak, controller
 	}
 
 	err = i.readKeycloakBackupCurrentState(context, cr, controllerClient)
+	if err != nil {
+		return err
+	}
+
+	err = i.readKeycloakStartupConfigMapCurrentState(context, cr, controllerClient)
 	if err != nil {
 		return err
 	}
@@ -423,6 +429,22 @@ func (i *ClusterState) readKeycloakRouteCurrentState(context context.Context, cr
 	} else {
 		i.KeycloakRoute = keycloakRoute.DeepCopy()
 		cr.UpdateStatusSecondaryResources(i.KeycloakRoute.Kind, i.KeycloakRoute.Name)
+	}
+	return nil
+}
+
+func (i *ClusterState) readKeycloakStartupConfigMapCurrentState(context context.Context, cr *kc.Keycloak, controllerClient client.Client) error {
+	keycloakStartupConfigMap := model.KeycloakConfigMapStartup(cr)
+	keycloakStartupConfigMapSelector := model.KeycloakConfigMapStartupSelector(cr)
+
+	err := controllerClient.Get(context, keycloakStartupConfigMapSelector, keycloakStartupConfigMap)
+	if err != nil {
+		if !apiErrors.IsNotFound(err) {
+			return err
+		}
+	} else {
+		i.KeycloakStartupConfigMap = keycloakStartupConfigMap.DeepCopy()
+		cr.UpdateStatusSecondaryResources(i.KeycloakStartupConfigMap.Kind, i.KeycloakStartupConfigMap.Name)
 	}
 	return nil
 }

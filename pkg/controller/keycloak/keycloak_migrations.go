@@ -28,7 +28,12 @@ func NewDefaultMigrator() *DefaultMigrator {
 func (i *DefaultMigrator) Migrate(cr *v1alpha1.Keycloak, currentState *common.ClusterState, desiredState common.DesiredClusterState) (common.DesiredClusterState, error) {
 	if needsMigration(cr, currentState) {
 		desiredImage := model.Profiles.GetKeycloakOrRHSSOImage(cr)
-		log.Info(fmt.Sprintf("Performing migration from '%s' to '%s'", currentState.KeycloakDeployment.Spec.Template.Spec.Containers[0].Image, desiredImage))
+
+		if cr.Spec.ImageOverrides.Keycloak != "" {
+			desiredImage = cr.Spec.ImageOverrides.Keycloak
+		}
+
+		log.Info(fmt.Sprintf("Performing migration from %q to %q", currentState.KeycloakDeployment.Spec.Template.Spec.Containers[0].Image, desiredImage))
 		deployment := findDeployment(&desiredState)
 
 		// The backup should be made when Keycloak container is down.
@@ -59,6 +64,11 @@ func needsMigration(cr *v1alpha1.Keycloak, currentState *common.ClusterState) bo
 	}
 	deployedImage := currentState.KeycloakDeployment.Spec.Template.Spec.Containers[0].Image
 	currentImage := model.Profiles.GetKeycloakOrRHSSOImage(cr)
+
+	if cr.Spec.ImageOverrides.Keycloak != "" {
+		currentImage = cr.Spec.ImageOverrides.Keycloak
+	}
+
 	return deployedImage != currentImage
 }
 

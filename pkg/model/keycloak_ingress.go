@@ -8,30 +8,61 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+func GetKeycloakServicePortTarget(cr *kc.Keycloak) int {
+	if cr.Spec.ServingCertDisabled {
+		return KeycloakPodPort
+	}
+	return KeycloakPodPortSSL
+}
+
+func GetHost(cr *kc.Keycloak) string {
+	if !cr.Spec.ExternalAccess.Enabled {
+		return ""
+	}
+	return cr.Spec.ExternalAccess.Hostname
+}
+
+func GetPath(cr *kc.Keycloak) string {
+	if !cr.Spec.ExternalAccess.Enabled {
+		return "/"
+	}
+	return cr.Spec.ExternalAccess.Path
+}
+
+func GetIngressLabels(cr *kc.Keycloak) map[string]string {
+	if !cr.Spec.ExternalAccess.Enabled {
+		return nil
+	}
+	return cr.Spec.ExternalAccess.Labels
+}
+
+func GetIngressAnnotations(cr *kc.Keycloak, existing map[string]string) map[string]string {
+	if !cr.Spec.ExternalAccess.Enabled {
+		return existing
+	}
+	return MergeAnnotations(cr.Spec.ExternalAccess.Annotations, existing)
+}
+
 func KeycloakIngress(cr *kc.Keycloak) *v1beta1.Ingress {
 	return &v1beta1.Ingress{
 		ObjectMeta: v1.ObjectMeta{
-			Name:      ApplicationName,
-			Namespace: cr.Namespace,
-			Labels: map[string]string{
-				"app": ApplicationName,
-			},
-			Annotations: map[string]string{
-				"nginx.ingress.kubernetes.io/backend-protocol": "HTTPS",
-			},
+			Name:        ApplicationName,
+			Namespace:   cr.Namespace,
+			Labels:      GetIngressLabels(cr),
+			Annotations: GetIngressAnnotations(cr, nil),
 		},
 		Spec: v1beta1.IngressSpec{
 			Rules: []v1beta1.IngressRule{
 				{
-					Host: IngressDefaultHost,
+					Host: GetHost(cr),
 					IngressRuleValue: v1beta1.IngressRuleValue{
 						HTTP: &v1beta1.HTTPIngressRuleValue{
 							Paths: []v1beta1.HTTPIngressPath{
 								{
-									Path: "/",
+									Path: GetPath(cr),
 									Backend: v1beta1.IngressBackend{
 										ServiceName: ApplicationName,
-										ServicePort: intstr.FromInt(KeycloakServicePort),
+										ServicePort: intstr.FromInt(GetKeycloakServicePortTarget(cr)),
 									},
 								},
 							},
@@ -45,7 +76,9 @@ func KeycloakIngress(cr *kc.Keycloak) *v1beta1.Ingress {
 
 func KeycloakIngressReconciled(cr *kc.Keycloak, currentState *v1beta1.Ingress) *v1beta1.Ingress {
 	reconciled := currentState.DeepCopy()
-	reconciledHost := currentState.Spec.Rules[0].Host
+	reconciledHost := GetHost(cr)
+	reconciled.Labels = GetIngressLabels(cr)
+	reconciled.Annotations = GetIngressAnnotations(cr, currentState.Annotations)
 	reconciled.Spec = v1beta1.IngressSpec{
 		Rules: []v1beta1.IngressRule{
 			{
@@ -54,10 +87,10 @@ func KeycloakIngressReconciled(cr *kc.Keycloak, currentState *v1beta1.Ingress) *
 					HTTP: &v1beta1.HTTPIngressRuleValue{
 						Paths: []v1beta1.HTTPIngressPath{
 							{
-								Path: "/",
+								Path: GetPath(cr),
 								Backend: v1beta1.IngressBackend{
 									ServiceName: ApplicationName,
-									ServicePort: intstr.FromInt(KeycloakServicePort),
+									ServicePort: intstr.FromInt(GetKeycloakServicePortTarget(cr)),
 								},
 							},
 						},
