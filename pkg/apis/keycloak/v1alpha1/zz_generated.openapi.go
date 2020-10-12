@@ -13,22 +13,22 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.Keycloak":             schema_pkg_apis_keycloak_v1alpha1_Keycloak(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAWSSpec":      schema_pkg_apis_keycloak_v1alpha1_KeycloakAWSSpec(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackup":       schema_pkg_apis_keycloak_v1alpha1_KeycloakBackup(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupSpec":   schema_pkg_apis_keycloak_v1alpha1_KeycloakBackupSpec(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupStatus": schema_pkg_apis_keycloak_v1alpha1_KeycloakBackupStatus(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClient":       schema_pkg_apis_keycloak_v1alpha1_KeycloakClient(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientSpec":   schema_pkg_apis_keycloak_v1alpha1_KeycloakClientSpec(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientStatus": schema_pkg_apis_keycloak_v1alpha1_KeycloakClientStatus(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealm":        schema_pkg_apis_keycloak_v1alpha1_KeycloakRealm(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmSpec":    schema_pkg_apis_keycloak_v1alpha1_KeycloakRealmSpec(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmStatus":  schema_pkg_apis_keycloak_v1alpha1_KeycloakRealmStatus(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakSpec":         schema_pkg_apis_keycloak_v1alpha1_KeycloakSpec(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStatus":       schema_pkg_apis_keycloak_v1alpha1_KeycloakStatus(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUser":         schema_pkg_apis_keycloak_v1alpha1_KeycloakUser(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserSpec":     schema_pkg_apis_keycloak_v1alpha1_KeycloakUserSpec(ref),
-		"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserStatus":   schema_pkg_apis_keycloak_v1alpha1_KeycloakUserStatus(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.Keycloak":             schema_pkg_apis_keycloak_v1alpha1_Keycloak(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAWSSpec":      schema_pkg_apis_keycloak_v1alpha1_KeycloakAWSSpec(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackup":       schema_pkg_apis_keycloak_v1alpha1_KeycloakBackup(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupSpec":   schema_pkg_apis_keycloak_v1alpha1_KeycloakBackupSpec(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupStatus": schema_pkg_apis_keycloak_v1alpha1_KeycloakBackupStatus(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClient":       schema_pkg_apis_keycloak_v1alpha1_KeycloakClient(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientSpec":   schema_pkg_apis_keycloak_v1alpha1_KeycloakClientSpec(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientStatus": schema_pkg_apis_keycloak_v1alpha1_KeycloakClientStatus(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealm":        schema_pkg_apis_keycloak_v1alpha1_KeycloakRealm(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmSpec":    schema_pkg_apis_keycloak_v1alpha1_KeycloakRealmSpec(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmStatus":  schema_pkg_apis_keycloak_v1alpha1_KeycloakRealmStatus(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakSpec":         schema_pkg_apis_keycloak_v1alpha1_KeycloakSpec(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStatus":       schema_pkg_apis_keycloak_v1alpha1_KeycloakStatus(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUser":         schema_pkg_apis_keycloak_v1alpha1_KeycloakUser(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserSpec":     schema_pkg_apis_keycloak_v1alpha1_KeycloakUserSpec(ref),
+		"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserStatus":   schema_pkg_apis_keycloak_v1alpha1_KeycloakUserStatus(ref),
 	}
 }
 
@@ -60,19 +60,19 @@ func schema_pkg_apis_keycloak_v1alpha1_Keycloak(ref common.ReferenceCallback) co
 					},
 					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakSpec"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStatus"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStatus"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakSpec", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakSpec", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
@@ -138,19 +138,19 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakBackup(ref common.ReferenceCallba
 					},
 					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupSpec"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupStatus"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupStatus"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupSpec", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupSpec", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakBackupStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
@@ -171,7 +171,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakBackupSpec(ref common.ReferenceCa
 					"aws": {
 						SchemaProps: spec.SchemaProps{
 							Description: "If provided, an automatic database backup will be created on AWS S3 instead of a local Persistent Volume. If this property is not provided - a local Persistent Volume backup will be chosen.",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAWSSpec"),
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAWSSpec"),
 						},
 					},
 					"instanceSelector": {
@@ -191,7 +191,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakBackupSpec(ref common.ReferenceCa
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAWSSpec", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAWSSpec", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
 	}
 }
 
@@ -280,19 +280,19 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakClient(ref common.ReferenceCallba
 					},
 					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientSpec"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientStatus"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientStatus"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientSpec", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientSpec", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakClientStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
@@ -312,7 +312,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakClientSpec(ref common.ReferenceCa
 					"client": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Keycloak Client REST object.",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIClient"),
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIClient"),
 						},
 					},
 				},
@@ -320,7 +320,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakClientSpec(ref common.ReferenceCa
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIClient", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIClient", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
 	}
 }
 
@@ -409,19 +409,19 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakRealm(ref common.ReferenceCallbac
 					},
 					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmSpec"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmStatus"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmStatus"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmSpec", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmSpec", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRealmStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
@@ -441,7 +441,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakRealmSpec(ref common.ReferenceCal
 					"realm": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Keycloak Realm REST object.",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIRealm"),
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIRealm"),
 						},
 					},
 					"realmOverrides": {
@@ -451,7 +451,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakRealmSpec(ref common.ReferenceCal
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
-										Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.RedirectorIdentityProviderOverride"),
+										Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.RedirectorIdentityProviderOverride"),
 									},
 								},
 							},
@@ -462,7 +462,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakRealmSpec(ref common.ReferenceCal
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIRealm", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.RedirectorIdentityProviderOverride", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIRealm", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.RedirectorIdentityProviderOverride", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
 	}
 }
 
@@ -562,16 +562,50 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakSpec(ref common.ReferenceCallback
 							Format:      "int32",
 						},
 					},
+					"servingCertDisabled": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Feature to disable ServingCertSecret which is a necessary logic to work with a TLS Ingress on a non-Openshift setup",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
 					"externalAccess": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Controls external Ingress/Route settings.",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalAccess"),
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalAccess"),
+						},
+					},
+					"extraEnv": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Controls external database settings. Using an external database requires providing a secret containing credentials as well as connection details. Here's an example of such secret:\n\n    apiVersion: v1\n    kind: Secret\n    metadata:\n        name: keycloak-db-secret\n        namespace: keycloak\n    stringData:\n        POSTGRES_DATABASE: <Database Name>\n        POSTGRES_EXTERNAL_ADDRESS: <External Database IP or URL (resolvable by K8s)>\n        POSTGRES_EXTERNAL_PORT: <External Database Port>\n        # Strongly recommended to use <'Keycloak CR Name'-postgresql>\n        POSTGRES_HOST: <Database Service Name>\n        POSTGRES_PASSWORD: <Database Password>\n        # Required for AWS Backup functionality\n        POSTGRES_SUPERUSER: true\n        POSTGRES_USERNAME: <Database Username>\n     type: Opaque\n\nBoth POSTGRES_EXTERNAL_ADDRESS and POSTGRES_EXTERNAL_PORT are specifically required for creating connection to the external database. The secret name is created using the following convention:\n      <Custom Resource Name>-db-secret\n\nEnables to pass extra Environment variables to the keycloak instance",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Type:   []string{"string"},
+										Format: "",
+									},
+								},
+							},
+						},
+					},
+					"startupScript": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Controls ConfigMap creation for startup",
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStartupScript"),
+						},
+					},
+					"keycloakCli": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Gives the option to define CLI Settings",
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakCli"),
 						},
 					},
 					"externalDatabase": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Controls external database settings. Using an external database requires providing a secret containing credentials as well as connection details. Here's an example of such secret:\n\n    apiVersion: v1\n    kind: Secret\n    metadata:\n        name: keycloak-db-secret\n        namespace: keycloak\n    stringData:\n        POSTGRES_DATABASE: <Database Name>\n        POSTGRES_EXTERNAL_ADDRESS: <External Database IP or URL (resolvable by K8s)>\n        POSTGRES_EXTERNAL_PORT: <External Database Port>\n        # Strongly recommended to use <'Keycloak CR Name'-postgresql>\n        POSTGRES_HOST: <Database Service Name>\n        POSTGRES_PASSWORD: <Database Password>\n        # Required for AWS Backup functionality\n        POSTGRES_SUPERUSER: true\n        POSTGRES_USERNAME: <Database Username>\n     type: Opaque\n\nBoth POSTGRES_EXTERNAL_ADDRESS and POSTGRES_EXTERNAL_PORT are specifically required for creating connection to the external database. The secret name is created using the following convention:\n      <Custom Resource Name>-db-secret\n\nFor more information, please refer to the Operator documentation.",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalDatabase"),
+							Description: "For more information, please refer to the Operator documentation.",
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalDatabase"),
 						},
 					},
 					"profile": {
@@ -584,25 +618,25 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakSpec(ref common.ReferenceCallback
 					"podDisruptionBudget": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Specify PodDisruptionBudget configuration.",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.PodDisruptionBudgetConfig"),
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.PodDisruptionBudgetConfig"),
 						},
 					},
 					"keycloakDeploymentSpec": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Resources (Requests and Limits) for KeycloakDeployment.",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.DeploymentSpec"),
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.DeploymentSpec"),
 						},
 					},
 					"postgresDeploymentSpec": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Resources (Requests and Limits) for PostgresDeployment.",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.DeploymentSpec"),
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.DeploymentSpec"),
 						},
 					},
 					"migration": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Specify Migration configuration",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.MigrateConfig"),
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.MigrateConfig"),
 						},
 					},
 					"storageClassName": {
@@ -612,11 +646,23 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakSpec(ref common.ReferenceCallback
 							Format:      "",
 						},
 					},
+					"affinity": {
+						SchemaProps: spec.SchemaProps{
+							Description: "\n Affinity defines which nodes your pod is eligible to be scheduled on, based on labels on the node.",
+							Ref:         ref("k8s.io/api/core/v1.Affinity"),
+						},
+					},
+					"imageOverrides": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Specify images used to override default Keycloak, KeycloakInitContainer, Postgresql and Backup images.",
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRelatedImages"),
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.DeploymentSpec", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalAccess", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalDatabase", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.MigrateConfig", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.PodDisruptionBudgetConfig"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.DeploymentSpec", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakCli", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalAccess", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakExternalDatabase", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakRelatedImages", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakStartupScript", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.MigrateConfig", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.PodDisruptionBudgetConfig", "k8s.io/api/core/v1.Affinity"},
 	}
 }
 
@@ -726,19 +772,19 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakUser(ref common.ReferenceCallback
 					},
 					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserSpec"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserStatus"),
+							Ref: ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserStatus"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserSpec", "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserSpec", "github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakUserStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
@@ -758,7 +804,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakUserSpec(ref common.ReferenceCall
 					"user": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Keycloak User REST object.",
-							Ref:         ref("github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIUser"),
+							Ref:         ref("github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIUser"),
 						},
 					},
 				},
@@ -766,7 +812,7 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakUserSpec(ref common.ReferenceCall
 			},
 		},
 		Dependencies: []string{
-			"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIUser", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
+			"github.com/pace/keycloak-operator/pkg/apis/keycloak/v1alpha1.KeycloakAPIUser", "k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
 	}
 }
 
