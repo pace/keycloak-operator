@@ -198,8 +198,9 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 					},
 				},
 				Spec: v1.PodSpec{
-					InitContainers: KeycloakExtensionsInitContainers(cr),
-					Volumes:        KeycloakVolumes(),
+					InitContainers:   KeycloakExtensionsInitContainers(cr),
+					Volumes:          KeycloakVolumes(),
+					ImagePullSecrets: getKeycloakImagePullSecrets(cr),
 					Containers: []v1.Container{
 						{
 							Name:  KeycloakDeploymentName,
@@ -249,6 +250,7 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 	reconciled.ResourceVersion = currentState.ResourceVersion
 	reconciled.Spec.Replicas = SanitizeNumberOfReplicas(cr.Spec.Instances, false)
 	reconciled.Spec.Template.Spec.Volumes = KeycloakVolumes()
+	reconciled.Spec.Template.Spec.ImagePullSecrets = getKeycloakImagePullSecrets(cr)
 	reconciled.Spec.Template.Spec.Containers = []v1.Container{
 		{
 			Name:  KeycloakDeploymentName,
@@ -361,4 +363,23 @@ func readinessProbe() *v1.Probe {
 		PeriodSeconds:       ProbeTimeBetweenRunsSeconds,
 		FailureThreshold:    ProbeFailureThreshold,
 	}
+}
+
+func getKeycloakImagePullSecrets(cr *v1alpha1.Keycloak) []v1.LocalObjectReference {
+
+	if cr.Spec.ImageOverrides.ImagePullSecrets != nil && len(cr.Spec.ImageOverrides.ImagePullSecrets) > 0 {
+
+		imagePullSecrets := []v1.LocalObjectReference{}
+
+		for _, v := range cr.Spec.ImageOverrides.ImagePullSecrets {
+
+			imagePullSecrets = append(imagePullSecrets, v1.LocalObjectReference{
+				Name: v,
+			})
+		}
+
+		return imagePullSecrets
+	}
+
+	return []v1.LocalObjectReference{}
 }
