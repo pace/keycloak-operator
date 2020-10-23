@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -165,6 +166,8 @@ func getKeycloakEnv(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) []v1.EnvVar {
 }
 
 func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.StatefulSet {
+	currentImage := GetCurrentKeycloakImage(currentState)
+
 	return &v13.StatefulSet{
 		ObjectMeta: v12.ObjectMeta{
 			Name:      KeycloakDeploymentName,
@@ -197,7 +200,7 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 					Containers: []v1.Container{
 						{
 							Name:  KeycloakDeploymentName,
-							Image: Images.Images[KeycloakImage],
+							Image: GetReconciledKeycloakImage(cr, currentImage),
 							Ports: []v1.ContainerPort{
 								{
 									ContainerPort: KeycloakServicePort,
@@ -349,4 +352,37 @@ func readinessProbe() *v1.Probe {
 		PeriodSeconds:       ProbeTimeBetweenRunsSeconds,
 		FailureThreshold:    ProbeFailureThreshold,
 	}
+}
+
+// We allow the patch version of an image for keycloak to be increased outside of the operator on the cluster
+func GetReconciledKeycloakImage(cr *v1alpha1.Keycloak, currentImage string) string {
+
+	if cr.Spec.ImageOverrides.Keycloak != "" {
+		return cr.Spec.ImageOverrides.Keycloak
+	}
+
+	currentImageRepo, currentImageMajor, currentImageMinor, currentImagePatch := GetImageRepoAndVersion(currentImage)
+	keycloakImageRepo, keycloakImageMajor, keycloakImageMinor, keycloakImagePatch := GetImageRepoAndVersion(KeycloakImage)
+
+	// Need to convert the patch version strings to ints for a > comparison.
+	currentImagePatchInt, err := strconv.Atoi(currentImagePatch)
+	// If we are unable to convert to an int, always default to the operator image
+	if err != nil {
+		return KeycloakImage
+	}
+
+	// Need to convert the patch version strings to ints for a > comparison.
+	keycloakImagePatchInt, err := strconv.Atoi(keycloakImagePatch)
+	// If we are unable to convert to an int, always default to the operator image
+	if err != nil {
+		return KeycloakImage
+	}
+
+	// Check the repos, major and minor versions match. Check the cluster patch version is greater. If so, return and reconcile with the current cluster image
+	// E.g. quay.io/keycloak/keycloak:7.0.1
+	if currentImageRepo == keycloakImageRepo && currentImageMajor == keycloakImageMajor && currentImageMinor == keycloakImageMinor && currentImagePatchInt > keycloakImagePatchInt {
+		return currentImage
+	}
+
+	return KeycloakImage
 }

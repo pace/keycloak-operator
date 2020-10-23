@@ -32,6 +32,7 @@ type ImageManager struct {
 
 func NewImageManager() ImageManager {
 	ret := ImageManager{}
+
 	ret.Images = map[string]string{
 		KeycloakImage:         ret.getImage(KeycloakImage, DefaultKeycloakImage),
 		RHSSOImage:            ret.getRHSSOImage(),
