@@ -239,6 +239,12 @@ func KeycloakDeploymentSelector(cr *v1alpha1.Keycloak) client.ObjectKey {
 }
 
 func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.StatefulSet, dbSecret *v1.Secret) *v13.StatefulSet {
+
+	currentImage := Images.Images[KeycloakImage]
+	if cr.Spec.ImageOverrides.Keycloak != "" {
+		currentImage = cr.Spec.ImageOverrides.Keycloak
+	}
+
 	reconciled := currentState.DeepCopy()
 	reconciled.ResourceVersion = currentState.ResourceVersion
 	reconciled.Spec.Replicas = SanitizeNumberOfReplicas(cr.Spec.Instances, false)
@@ -246,7 +252,7 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 	reconciled.Spec.Template.Spec.Containers = []v1.Container{
 		{
 			Name:  KeycloakDeploymentName,
-			Image: Images.Images[KeycloakImage],
+			Image: currentImage,
 			Ports: []v1.ContainerPort{
 				{
 					ContainerPort: KeycloakServicePort,
