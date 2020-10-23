@@ -42,7 +42,7 @@ func (i *DefaultMigrator) Migrate(cr *v1alpha1.Keycloak, currentState *common.Cl
 		if deployment != nil && deployment.Status.Replicas > 0 {
 			log.Info("Number of replicas decreased to 0")
 			deployment.Spec.Replicas = &[]int32{0}[0]
-			deployment.Spec.Template.Spec.Containers[0].Image = currentState.KeycloakDeployment.Spec.Template.Spec.Containers[0].Image
+			deployment.Spec.Template.Spec.Containers[0].Image = desiredImage
 			return desiredState, nil
 		}
 
