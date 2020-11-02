@@ -219,8 +219,9 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 									Protocol:      "TCP",
 								},
 							},
-							VolumeMounts:   KeycloakVolumeMounts(KeycloakExtensionPath),
-							LivenessProbe:  livenessProbe(),
+							VolumeMounts: KeycloakVolumeMounts(KeycloakExtensionPath),
+							// 2020-11-02 => For Pace we gonna disable the livenessProbe to not be killed by k8s
+							//LivenessProbe:  livenessProbe(),
 							ReadinessProbe: readinessProbe(),
 							Env:            getKeycloakEnv(cr, dbSecret),
 							Resources:      getResources(cr),
@@ -269,8 +270,9 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 					Protocol:      "TCP",
 				},
 			},
-			VolumeMounts:   KeycloakVolumeMounts(KeycloakExtensionPath),
-			LivenessProbe:  livenessProbe(),
+			VolumeMounts: KeycloakVolumeMounts(KeycloakExtensionPath),
+			// 2020-11-02 => For Pace we gonna disable the livenessProbe to not be killed by k8s
+			//LivenessProbe:  livenessProbe(),
 			ReadinessProbe: readinessProbe(),
 			Env:            getKeycloakEnv(cr, dbSecret),
 			Resources:      getResources(cr),
