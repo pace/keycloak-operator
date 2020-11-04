@@ -150,6 +150,15 @@ func getKeycloakEnv(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) []v1.EnvVar {
 		},
 	}
 
+	if len(cr.Spec.ExtraEnv) > 0 {
+		for k, v := range cr.Spec.ExtraEnv {
+			env = append(env, v1.EnvVar{
+				Name:  k,
+				Value: v,
+			})
+		}
+	}
+
 	if cr.Spec.ExternalDatabase.Enabled {
 		env = append(env, v1.EnvVar{
 			Name:  GetServiceEnvVar("SERVICE_HOST"),
