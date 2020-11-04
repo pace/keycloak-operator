@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -23,6 +24,9 @@ import (
 
 const (
 	authURL = "auth/realms/master/protocol/openid-connect/token"
+
+	resourceNameClientScope = "client-scope"
+	resourceNameClient      = "client"
 )
 
 type Requester interface {
@@ -46,6 +50,7 @@ func (c *Client) create(obj T, resourcePath, resourceName string) (string, error
 		return "", nil
 	}
 
+	logrus.Infof("Calling PUT %s", fmt.Sprintf("%s/auth/admin/%s", c.URL, resourcePath))
 	req, err := http.NewRequest(
 		"POST",
 		fmt.Sprintf("%s/auth/admin/%s", c.URL, resourcePath),
@@ -393,12 +398,133 @@ func (c *Client) update(obj T, resourcePath, resourceName string) error {
 	return nil
 }
 
+func (c *Client) addClientScope(clientID, scopeID, realmName string) error {
+	return c.updateClientScope(http.MethodPut, clientID, scopeID, realmName)
+}
+
+func (c *Client) removeClientScope(clientID, scopeID, realmName string) error {
+	return c.updateClientScope(http.MethodDelete, clientID, scopeID, realmName)
+}
+
+func (c *Client) updateClientScope(method, clientID, scopeID, realmName string) error {
+	var body io.Reader
+	if method == http.MethodPut {
+		buf, err := json.Marshal(UpdateClientScopeRequest{
+			Realm:         realmName,
+			ClientID:      clientID,
+			ClientScopeID: scopeID,
+		})
+		if err != nil {
+			logrus.Infof("failed to create request for updating default client scope: %s", err) // TODO (JF) Remove once the default loglevel logs errors!
+			logrus.Errorf("failed to create request for updating default client scope: %s", err)
+			return err
+		}
+		body = bytes.NewReader(buf)
+	}
+	logrus.Infof("Calling %s %s", method, fmt.Sprintf("%s/auth/admin/realms/%s/clients/%s/default-client-scopes/%s", c.URL, realmName, clientID, scopeID))
+	req, err := http.NewRequest(
+		method,
+		fmt.Sprintf("%s/auth/admin/realms/%s/clients/%s/default-client-scopes/%s", c.URL, realmName, clientID, scopeID),
+		body,
+	)
+	if err != nil {
+		logrus.Infof("failed to create request for updating default client scope: %s", err) // TODO (JF) Remove once the default loglevel logs errors!
+		logrus.Errorf("failed to create request for updating default client scope: %s", err)
+		return err
+	}
+	if method == http.MethodPut {
+		req.Header.Set("Content-Type", "application/json")
+	}
+	req.Header.Add("Authorization", "Bearer "+c.token)
+
+	resp, err := c.requester.Do(req)
+	if err != nil {
+		logrus.Infof("failed to update default client scope %s to client %s on realm %s: %s", clientID, scopeID, realmName, err) // TODO (JF) Remove once the default loglevel logs errors!
+		logrus.Errorf("failed to update default client scope %s to client %s on realm %s: %s", clientID, scopeID, realmName, err)
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		logrus.Infof("unexpected response status code failed to update default client scope %s to client %s on realm %s: %d", clientID, scopeID, realmName, resp.StatusCode) // TODO (JF) Remove once the default loglevel logs errors!
+		respData, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("unexpected error during reading from response body: %w", err)
+		}
+		logrus.Infof("error response body: %s", string(respData)) // TODO (JF) Remove once the default loglevel logs errors!
+		return fmt.Errorf("unexpected status code %d, expected 204", resp.StatusCode)
+	}
+	return nil
+}
+
+func (c *Client) UpdateClientScopes(specClient *v1alpha1.KeycloakAPIClient, realmName string) error {
+	// First get the available scopes for the current realm
+	availableScopes, err := c.ListAllClientScopes(realmName)
+	if err != nil {
+		return err
+	}
+	currentClientScopes, err := c.ListClientScopesForClient(specClient.ID, realmName)
+	if err != nil {
+		return err
+	}
+
+	scopeNameToID := make(map[string]string, 0)
+	for _, scope := range availableScopes {
+		scopeNameToID[scope.Name] = scope.ID
+	}
+
+	logrus.Infof("Syncing scopes for client with clientID %s/%s", realmName, specClient.ClientID)
+	for _, resourceScope := range specClient.DefaultClientScopes {
+		addScope := true
+		for _, scope := range currentClientScopes {
+			if resourceScope == scope.Name {
+				addScope = false
+			}
+		}
+		if !addScope {
+			continue
+		}
+		id, ok := scopeNameToID[resourceScope]
+		if !ok {
+			logrus.Warnf("Could not map scope name %s to scope id", resourceScope)
+			continue
+		}
+		logrus.Infof("Attempting to add scope %s/%s to client id:%s", id, resourceScope, specClient.ID)
+		err := c.addClientScope(specClient.ID, id, realmName)
+		if err != nil {
+			return errors.Wrapf(err, "Could not add scope %s to client %s on realm %s", id, specClient.ID, realmName)
+		}
+	}
+	for _, scope := range currentClientScopes {
+		removeScope := true
+		for _, resourceScope := range specClient.DefaultClientScopes {
+			if resourceScope == scope.Name {
+				removeScope = false
+			}
+		}
+		if !removeScope {
+			continue
+		}
+		logrus.Infof("Attempting to remove scope %s/%s from client id:%s", scope.ID, scope.Name, specClient.ID)
+		err := c.removeClientScope(specClient.ID, scope.ID, realmName)
+		if err != nil {
+			return errors.Wrapf(err, "Could not remove scope %s to client %s on realm %s", scope.ID, specClient.ID, realmName)
+		}
+	}
+
+	return nil
+}
+
 func (c *Client) UpdateRealm(realm *v1alpha1.KeycloakRealm) error {
 	return c.update(realm, fmt.Sprintf("realms/%s", realm.Spec.Realm.ID), "realm")
 }
 
 func (c *Client) UpdateClient(specClient *v1alpha1.KeycloakAPIClient, realmName string) error {
-	return c.update(specClient, fmt.Sprintf("realms/%s/clients/%s", realmName, specClient.ID), "client")
+	err := c.update(specClient, fmt.Sprintf("realms/%s/clients/%s", realmName, specClient.ID), "client")
+	if err != nil {
+		return err
+	}
+	// Updating (default)ClientScopes requires separate API calls.
+	return c.UpdateClientScopes(specClient, realmName)
 }
 
 func (c *Client) UpdateUser(specUser *v1alpha1.KeycloakAPIUser, realmName string) error {
@@ -487,7 +613,7 @@ func (c *Client) DeleteAuthenticatorConfig(configID, realmName string) error {
 // Generic list function for listing Keycloak resources
 func (c *Client) list(resourcePath, resourceName string, unMarshalListFunc func(body []byte) (T, error)) (T, error) {
 	req, err := http.NewRequest(
-		"GET",
+		http.MethodGet,
 		fmt.Sprintf("%s/auth/admin/%s", c.URL, resourcePath),
 		nil,
 	)
@@ -520,6 +646,51 @@ func (c *Client) list(resourcePath, resourceName string, unMarshalListFunc func(
 	}
 
 	return objs, nil
+}
+
+// ListAllClientScopes lists all available scopes in a realm.
+func (c *Client) ListAllClientScopes(realmName string) ([]*ClientScope, error) {
+	logrus.Infof("Listing scopes for realm %s", realmName)
+	result, err := c.list(fmt.Sprintf("realms/%s/client-scopes", realmName), "client-scopes", func(body []byte) (T, error) {
+		var clientScopes []*ClientScope
+		err := json.Unmarshal(body, &clientScopes)
+		return clientScopes, err
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, ok := result.([]*ClientScope)
+
+	if !ok {
+		return nil, errors.New("error decoding list client-scopes response")
+	}
+
+	return res, nil
+}
+
+// ListClientScopesForClient requires you to pass the internal id of the client and not the actual oauth clientid of
+// the client.
+func (c *Client) ListClientScopesForClient(clientID, realmName string) ([]*ClientScope, error) {
+	logrus.Infof("Listing scopes for client with clientID %s/%s", realmName, clientID)
+	result, err := c.list(fmt.Sprintf("realms/%s/clients/%s/default-client-scopes", realmName, clientID), "client-scopes", func(body []byte) (T, error) {
+		var clientScopes []*ClientScope
+		err := json.Unmarshal(body, &clientScopes)
+		return clientScopes, err
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, ok := result.([]*ClientScope)
+
+	if !ok {
+		return nil, errors.New("error decoding list client-scopes response")
+	}
+
+	return res, nil
 }
 
 func (c *Client) ListRealms() ([]*v1alpha1.KeycloakRealm, error) {
