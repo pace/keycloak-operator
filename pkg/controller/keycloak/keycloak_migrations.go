@@ -55,7 +55,6 @@ func needsMigration(cr *v1alpha1.Keycloak, currentState *common.ClusterState) bo
 		desiredImage = cr.Spec.ImageOverrides.Keycloak
 	}
 
-
 	if cr.Spec.Profile == common.RHSSOProfile {
 		desiredImage = model.RHSSOImage
 	}

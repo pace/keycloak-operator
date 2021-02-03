@@ -1,11 +1,12 @@
 package model
 
 import (
+	"strings"
+
 	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strings"
 )
 
 func GetStartupScriptConfigMapContent(cr *kc.Keycloak) map[string]string {

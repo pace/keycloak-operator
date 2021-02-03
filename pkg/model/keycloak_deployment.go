@@ -20,7 +20,6 @@ const (
 	ProbeTimeBetweenRunsSeconds = 30
 )
 
-
 func GetServiceEnvVar(suffix string) string {
 	serviceName := strings.ToUpper(PostgresqlServiceName)
 	serviceName = strings.ReplaceAll(serviceName, "-", "_")
@@ -126,14 +125,14 @@ func getKeycloakEnv(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) []v1.EnvVar {
 		defaultEnv = MergeEnvs(cr.Spec.ExtraEnv, defaultEnv)
 	}
 
-	 if cr.Spec.ExternalAccess.Enabled {
-	 	defaultEnv = append(defaultEnv, v1.EnvVar{
-	 		Name: "PROXY_ADDRESS_FORWARDING",
+	if cr.Spec.ExternalAccess.Enabled {
+		defaultEnv = append(defaultEnv, v1.EnvVar{
+			Name:  "PROXY_ADDRESS_FORWARDING",
 			Value: "true",
 		})
-	 }
+	}
 
-	 return defaultEnv
+	return defaultEnv
 }
 
 func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.StatefulSet {
@@ -164,9 +163,9 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 					},
 				},
 				Spec: v1.PodSpec{
-					InitContainers: KeycloakExtensionsInitContainers(cr),
-					Volumes:        KeycloakVolumes(cr),
-					Affinity: cr.Spec.Affinity,
+					InitContainers:   KeycloakExtensionsInitContainers(cr),
+					Volumes:          KeycloakVolumes(cr),
+					Affinity:         cr.Spec.Affinity,
 					ImagePullSecrets: GetKeycloakImagePullSecrets(cr),
 					Containers: []v1.Container{
 						{
@@ -190,8 +189,8 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 									Protocol:      "TCP",
 								},
 							},
-							VolumeMounts: KeycloakVolumeMounts(cr, KeycloakExtensionPath),
-              				Env: getKeycloakEnv(cr, dbSecret),
+							VolumeMounts:   KeycloakVolumeMounts(cr, KeycloakExtensionPath),
+							Env:            getKeycloakEnv(cr, dbSecret),
 							LivenessProbe:  livenessProbe(),
 							ReadinessProbe: readinessProbe(),
 						},
@@ -202,23 +201,21 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.Statefu
 	}
 }
 
-
 func GetKeycloakImagePullSecrets(cr *v1alpha1.Keycloak) []v1.LocalObjectReference {
 
 	if cr.Spec.ImageOverrides.ImagePullSecrets != nil && len(cr.Spec.ImageOverrides.ImagePullSecrets) > 0 {
 
 		imagePullSecrets := []v1.LocalObjectReference{}
 
-			for _,v := range cr.Spec.ImageOverrides.ImagePullSecrets {
+		for _, v := range cr.Spec.ImageOverrides.ImagePullSecrets {
 
-				imagePullSecrets = append(imagePullSecrets, v1.LocalObjectReference{
-					Name: v,
-				})
-			}
+			imagePullSecrets = append(imagePullSecrets, v1.LocalObjectReference{
+				Name: v,
+			})
+		}
 
 		return imagePullSecrets
 	}
-
 
 	return []v1.LocalObjectReference{}
 }
@@ -270,10 +267,10 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 					Protocol:      "TCP",
 				},
 			},
-			VolumeMounts: KeycloakVolumeMounts(cr, KeycloakExtensionPath),
+			VolumeMounts:   KeycloakVolumeMounts(cr, KeycloakExtensionPath),
 			LivenessProbe:  livenessProbe(),
 			ReadinessProbe: readinessProbe(),
-			Env: getKeycloakEnv(cr, dbSecret),
+			Env:            getKeycloakEnv(cr, dbSecret),
 		},
 	}
 	reconciled.Spec.Template.Spec.InitContainers = KeycloakExtensionsInitContainers(cr)
@@ -296,15 +293,15 @@ func KeycloakVolumeMounts(cr *v1alpha1.Keycloak, extensionsPath string) []v1.Vol
 
 	if !cr.Spec.ServingCertDisabled {
 		volumeMounts = append(volumeMounts, v1.VolumeMount{
-			Name: 		ServingCertSecretName,
-			MountPath: 	"/etc/x509/https",
+			Name:      ServingCertSecretName,
+			MountPath: "/etc/x509/https",
 		})
 	}
 
 	if cr.Spec.StartupScript.Enabled {
 		volumeMounts = append(volumeMounts, v1.VolumeMount{
-			Name: "keycloak-startup",
-			ReadOnly: true,
+			Name:      "keycloak-startup",
+			ReadOnly:  true,
 			MountPath: "/opt/jboss/startup-scripts",
 		})
 	}
@@ -396,7 +393,7 @@ func readinessProbe() *v1.Probe {
 		InitialDelaySeconds: ReadinessProbeInitialDelay,
 		TimeoutSeconds:      ProbeTimeoutSeconds,
 		PeriodSeconds:       ProbeTimeBetweenRunsSeconds,
-		FailureThreshold:	 10,
+		FailureThreshold:    10,
 	}
 }
 
@@ -429,7 +426,6 @@ func GetReconciledKeycloakImage(cr *v1alpha1.Keycloak, currentImage string) stri
 	if currentImageRepo == keycloakImageRepo && currentImageMajor == keycloakImageMajor && currentImageMinor == keycloakImageMinor && currentImagePatchInt > keycloakImagePatchInt {
 		return currentImage
 	}
-
 
 	return KeycloakImage
 }
