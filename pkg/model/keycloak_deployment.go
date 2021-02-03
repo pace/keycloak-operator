@@ -122,14 +122,9 @@ func getKeycloakEnv(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) []v1.EnvVar {
 		},
 	}
 
-	 if len(cr.Spec.ExtraEnv) > 0 {
-		 for k, v := range cr.Spec.ExtraEnv {
-			 defaultEnv = append(defaultEnv, v1.EnvVar{
-			 	Name: k,
-			 	Value: v,
-			 })
-		 }
-	 }
+	if len(cr.Spec.ExtraEnv) > 0 {
+		defaultEnv = MergeEnvs(cr.Spec.ExtraEnv, defaultEnv)
+	}
 
 	 if cr.Spec.ExternalAccess.Enabled {
 	 	defaultEnv = append(defaultEnv, v1.EnvVar{

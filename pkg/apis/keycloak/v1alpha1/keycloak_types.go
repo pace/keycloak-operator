@@ -25,7 +25,9 @@ type KeycloakSpec struct {
 	ExternalAccess KeycloakExternalAccess `json:"externalAccess,omitempty"`
 	// Enables to pass extra Environment variables to the keycloak instance
 	// +optional
-	ExtraEnv map[string]string `json:"extraEnv,omitempty"`
+	// +patchMergeKey=name
+	// +patchStrategy=merge
+	ExtraEnv []corev1.EnvVar `json:"extraEnv,omitempty" patchStrategy:"merge" patchMergeKey:"name"`
 	// Controls ConfigMap creation for startup
 	// +optional
 	StartupScript KeycloakStartupScript `json:"startupScript,omitempty"`
