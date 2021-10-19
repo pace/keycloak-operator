@@ -376,7 +376,6 @@ func (c *Client) update(obj T, resourcePath, resourceName string) error {
 
 	logrus.Infof("Calling PUT %s with body: %s", fmt.Sprintf("%s/auth/admin/%s", c.URL, resourcePath), string(jsonValue))
 
-
 	req, err := http.NewRequest(
 		"PUT",
 		fmt.Sprintf("%s/auth/admin/%s", c.URL, resourcePath),
