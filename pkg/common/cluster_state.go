@@ -51,7 +51,7 @@ type ClusterState struct {
 	KeycloakDeployment              *v12.StatefulSet
 	KeycloakAdminSecret             *v1.Secret
 	KeycloakIngress                 *v1beta1.Ingress
-	KeycloakStartupConfigMap		*v1.ConfigMap
+	KeycloakStartupConfigMap        *v1.ConfigMap
 	KeycloakRoute                   *v13.Route
 	PostgresqlServiceEndpoints      *v1.Endpoints
 	PodDisruptionBudget             *v1beta12.PodDisruptionBudget

@@ -317,7 +317,6 @@ func (i *KeycloakReconciler) getKeycloakDeploymentOrRHSSODesiredState(clusterSta
 	//	deploymentReconciled = model.RHSSODeploymentReconciled(cr, clusterState.KeycloakDeployment, clusterState.DatabaseSecret)
 	//}
 
-
 	//return common.GenericUpdateAction{
 	//	Ref: deploymentReconciled,
 	//	Msg: "Update " + deploymentName + " Deployment (StatefulSet)",
@@ -380,7 +379,6 @@ func (i *KeycloakReconciler) getPodDisruptionBudgetDesiredState(clusterState *co
 	}
 	return nil
 }
-
 
 func (i *KeycloakReconciler) getKeycloakStartupScriptDesiredState(clusterState *common.ClusterState, cr *kc.Keycloak) common.ClusterAction {
 	if clusterState.KeycloakStartupConfigMap == nil {

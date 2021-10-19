@@ -151,8 +151,8 @@ func RHSSODeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) *v13.StatefulSe
 									Protocol:      "TCP",
 								},
 							},
-							VolumeMounts: KeycloakVolumeMounts(cr, RhssoExtensionPath),
-							Env:          getRHSSOEnv(cr, dbSecret),
+							VolumeMounts:   KeycloakVolumeMounts(cr, RhssoExtensionPath),
+							Env:            getRHSSOEnv(cr, dbSecret),
 							LivenessProbe:  livenessProbe(),
 							ReadinessProbe: readinessProbe(),
 						},
@@ -199,10 +199,10 @@ func RHSSODeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.Stateful
 					Protocol:      "TCP",
 				},
 			},
-			VolumeMounts: KeycloakVolumeMounts(cr, RhssoExtensionPath),
+			VolumeMounts:   KeycloakVolumeMounts(cr, RhssoExtensionPath),
 			LivenessProbe:  livenessProbe(),
 			ReadinessProbe: readinessProbe(),
-			Env: getRHSSOEnv(cr, dbSecret),
+			Env:            getRHSSOEnv(cr, dbSecret),
 		},
 	}
 	reconciled.Spec.Template.Spec.InitContainers = KeycloakExtensionsInitContainers(cr)
