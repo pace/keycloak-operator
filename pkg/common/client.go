@@ -90,6 +90,10 @@ func (c *Client) CreateClient(client *v1alpha1.KeycloakAPIClient, realmName stri
 	// Pace Keycloak 15 Workaround Fix
 	client.DefaultRoles = nil
 
+	if client.RedirectUris == nil {
+		client.RedirectUris = make([]string, 0)
+	}
+
 	return c.create(client, fmt.Sprintf("realms/%s/clients", realmName), "client")
 }
 
@@ -279,6 +283,10 @@ func (c *Client) GetClient(clientID, realmName string) (*v1alpha1.KeycloakAPICli
 
 		// Pace Keycloak 15 Workaround Fix
 		client.DefaultRoles = nil
+
+		if client.RedirectUris == nil {
+			client.RedirectUris = make([]string, 0)
+		}
 
 		return client, err
 	})
@@ -478,6 +486,10 @@ func (c *Client) UpdateClientScopes(specClient *v1alpha1.KeycloakAPIClient, real
 
 	// Pace Keycloak 15 Workaround Fix
 	specClient.DefaultRoles = nil
+
+	if specClient.RedirectUris == nil {
+		specClient.RedirectUris = make([]string, 0)
+	}
 
 	logrus.Infof("Syncing scopes for client with clientID %s/%s", realmName, specClient.ClientID)
 

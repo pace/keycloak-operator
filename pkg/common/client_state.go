@@ -38,6 +38,10 @@ func (i *ClientState) Read(context context.Context, cr *kc.KeycloakClient, realm
 	// Pace Keycloak 15 Workaround Fix
 	client.DefaultRoles = nil
 
+	if client.RedirectUris == nil {
+		client.RedirectUris = make([]string, 0)
+	}
+
 	clientSecret, err := realmClient.GetClientSecret(cr.Spec.Client.ID, i.Realm.Spec.Realm.Realm)
 	if err != nil {
 		return err
