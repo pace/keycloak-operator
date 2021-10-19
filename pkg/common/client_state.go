@@ -35,6 +35,9 @@ func (i *ClientState) Read(context context.Context, cr *kc.KeycloakClient, realm
 		return nil
 	}
 
+	// Pace Keycloak 15 Workaround Fix
+	client.DefaultRoles = nil
+
 	clientSecret, err := realmClient.GetClientSecret(cr.Spec.Client.ID, i.Realm.Spec.Realm.Realm)
 	if err != nil {
 		return err

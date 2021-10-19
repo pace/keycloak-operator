@@ -87,6 +87,9 @@ func (c *Client) CreateRealm(realm *v1alpha1.KeycloakRealm) error {
 }
 
 func (c *Client) CreateClient(client *v1alpha1.KeycloakAPIClient, realmName string) error {
+	// Pace Keycloak 15 Workaround Fix
+	client.DefaultRoles = nil
+
 	return c.create(client, fmt.Sprintf("realms/%s/clients", realmName), "client")
 }
 
@@ -273,6 +276,10 @@ func (c *Client) GetClient(clientID, realmName string) (*v1alpha1.KeycloakAPICli
 	result, err := c.get(fmt.Sprintf("realms/%s/clients/%s", realmName, clientID), "client", func(body []byte) (T, error) {
 		client := &v1alpha1.KeycloakAPIClient{}
 		err := json.Unmarshal(body, client)
+
+		// Pace Keycloak 15 Workaround Fix
+		client.DefaultRoles = nil
+
 		return client, err
 	})
 	if err != nil {
@@ -468,7 +475,11 @@ func (c *Client) UpdateClientScopes(specClient *v1alpha1.KeycloakAPIClient, real
 		scopeNameToID[scope.Name] = scope.ID
 	}
 
+	// Pace Keycloak 15 Workaround Fix
+	specClient.DefaultRoles = nil
+
 	logrus.Infof("Syncing scopes for client with clientID %s/%s", realmName, specClient.ClientID)
+
 	for _, resourceScope := range specClient.DefaultClientScopes {
 		addScope := true
 		for _, scope := range currentClientScopes {
@@ -490,6 +501,7 @@ func (c *Client) UpdateClientScopes(specClient *v1alpha1.KeycloakAPIClient, real
 			return errors.Wrapf(err, "Could not add scope %s to client %s on realm %s", id, specClient.ID, realmName)
 		}
 	}
+
 	for _, scope := range currentClientScopes {
 		removeScope := true
 		for _, resourceScope := range specClient.DefaultClientScopes {
