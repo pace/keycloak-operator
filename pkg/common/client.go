@@ -540,6 +540,13 @@ func (c *Client) UpdateRealm(realm *v1alpha1.KeycloakRealm) error {
 }
 
 func (c *Client) UpdateClient(specClient *v1alpha1.KeycloakAPIClient, realmName string) error {
+	// Pace Keycloak 15 Workaround Fix
+	specClient.DefaultRoles = nil
+
+	if specClient.RedirectUris == nil {
+		specClient.RedirectUris = make([]string, 0)
+	}
+
 	err := c.update(specClient, fmt.Sprintf("realms/%s/clients/%s", realmName, specClient.ID), "client")
 	if err != nil {
 		return err
