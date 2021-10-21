@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/keycloak/keycloak-operator/pkg/apis/monkeypatch"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -50,6 +51,9 @@ func (c *Client) create(obj T, resourcePath, resourceName string) error {
 		return nil
 	}
 
+	logrus.Infof("Calling POST %s", fmt.Sprintf("%s/auth/admin/%s", c.URL, resourcePath))
+	logrus.Debugf("Calling POST with body: %s", string(jsonValue))
+
 	req, err := http.NewRequest(
 		"POST",
 		fmt.Sprintf("%s/auth/admin/%s", c.URL, resourcePath),
@@ -91,10 +95,10 @@ func (c *Client) CreateClient(client *v1alpha1.KeycloakAPIClient, realmName stri
 	client.DefaultRoles = nil
 
 	if client.RedirectUris == nil {
-		client.RedirectUris = make([]string, 0)
+		client.RedirectUris = make([]string, 1)
 	}
 
-	return c.create(client, fmt.Sprintf("realms/%s/clients", realmName), "client")
+	return c.create(c.MonkeyPatchKeycloakAPIClient(client), fmt.Sprintf("realms/%s/clients", realmName), "client")
 }
 
 func (c *Client) CreateUser(user *v1alpha1.KeycloakAPIUser, realmName string) error {
@@ -382,7 +386,8 @@ func (c *Client) update(obj T, resourcePath, resourceName string) error {
 		return nil
 	}
 
-	logrus.Infof("Calling PUT %s with body: %s", fmt.Sprintf("%s/auth/admin/%s", c.URL, resourcePath), string(jsonValue))
+	logrus.Infof("Calling PUT %s", fmt.Sprintf("%s/auth/admin/%s", c.URL, resourcePath))
+	logrus.Debugf("Calling PUT with body: %s", string(jsonValue))
 
 	req, err := http.NewRequest(
 		"PUT",
@@ -468,6 +473,12 @@ func (c *Client) updateClientScope(method, clientID, scopeID, realmName string) 
 	return nil
 }
 
+// MonkeyPatchKeycloakAPIClient does monkey patching to adjust the tags.
+func (c *Client) MonkeyPatchKeycloakAPIClient(specClient *v1alpha1.KeycloakAPIClient) (*monkeypatch.KeycloakAPIClient) {
+	var patchClient monkeypatch.KeycloakAPIClient = monkeypatch.KeycloakAPIClient(*specClient)
+	return &patchClient
+}
+
 func (c *Client) UpdateClientScopes(specClient *v1alpha1.KeycloakAPIClient, realmName string) error {
 	// First get the available scopes for the current realm
 	availableScopes, err := c.ListAllClientScopes(realmName)
@@ -547,10 +558,11 @@ func (c *Client) UpdateClient(specClient *v1alpha1.KeycloakAPIClient, realmName 
 		specClient.RedirectUris = make([]string, 0)
 	}
 
-	err := c.update(specClient, fmt.Sprintf("realms/%s/clients/%s", realmName, specClient.ID), "client")
+	err := c.update(c.MonkeyPatchKeycloakAPIClient(specClient), fmt.Sprintf("realms/%s/clients/%s", realmName, specClient.ID), "client")
 	if err != nil {
 		return err
 	}
+
 	// Updating (default)ClientScopes requires separate API calls.
 	return c.UpdateClientScopes(specClient, realmName)
 }

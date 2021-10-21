@@ -2,6 +2,7 @@ package common
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 
 	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	"github.com/keycloak/keycloak-operator/pkg/model"
@@ -35,12 +36,7 @@ func (i *ClientState) Read(context context.Context, cr *kc.KeycloakClient, realm
 		return nil
 	}
 
-	// Pace Keycloak 15 Workaround Fix
-	client.DefaultRoles = nil
-
-	if client.RedirectUris == nil {
-		client.RedirectUris = make([]string, 0)
-	}
+	logrus.Infof("Reading Client-State: %+v", client)
 
 	clientSecret, err := realmClient.GetClientSecret(cr.Spec.Client.ID, i.Realm.Spec.Realm.Realm)
 	if err != nil {
