@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -122,12 +123,20 @@ func getKeycloakEnv(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) []v1.EnvVar {
 	}
 
 	if len(cr.Spec.ExtraEnv) > 0 {
-		for k, v := range cr.Spec.ExtraEnv {
+		// sorting prevents from reconcile over reconcile
+		extraKeyNames := make([]string, len(cr.Spec.ExtraEnv))
+		for k := range cr.Spec.ExtraEnv {
+			extraKeyNames = append(extraKeyNames, k)
+		}
+		sort.Strings(extraKeyNames)
+
+		for _, k := range extraKeyNames {
 			defaultEnv = append(defaultEnv, v1.EnvVar{
 				Name:  k,
-				Value: v,
+				Value: cr.Spec.ExtraEnv[k],
 			})
 		}
+
 	}
 
 	if cr.Spec.ExternalAccess.Enabled {
