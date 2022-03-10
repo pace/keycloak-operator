@@ -11,7 +11,10 @@ import (
 	v1 "k8s.io/api/core/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	logf "sigs.k8s.io/controller-runtime/pkg/log"
 )
+
+var log = logf.Log.WithName("controller_deployment")
 
 const (
 	LivenessProbeInitialDelay  = 150
@@ -124,17 +127,21 @@ func getKeycloakEnv(cr *v1alpha1.Keycloak, dbSecret *v1.Secret) []v1.EnvVar {
 
 	if len(cr.Spec.ExtraEnv) > 0 {
 		// sorting prevents from reconcile over reconcile
-		extraKeyNames := make([]string, len(cr.Spec.ExtraEnv))
+		extraKeyNames := make([]string, 0)
 		for k := range cr.Spec.ExtraEnv {
 			extraKeyNames = append(extraKeyNames, k)
 		}
 		sort.Strings(extraKeyNames)
 
+		log.Info(fmt.Sprintf("Adding extraEnv: %+v", extraKeyNames))
+
 		for _, k := range extraKeyNames {
-			defaultEnv = append(defaultEnv, v1.EnvVar{
+			envEntry := v1.EnvVar{
 				Name:  k,
 				Value: cr.Spec.ExtraEnv[k],
-			})
+			}
+
+			defaultEnv = append(defaultEnv, envEntry)
 		}
 
 	}
