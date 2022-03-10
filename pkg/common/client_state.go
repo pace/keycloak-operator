@@ -2,6 +2,7 @@ package common
 
 import (
 	"context"
+
 	"github.com/sirupsen/logrus"
 
 	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"

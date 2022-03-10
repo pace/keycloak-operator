@@ -5,13 +5,14 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/keycloak/keycloak-operator/pkg/apis/monkeypatch"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/keycloak/keycloak-operator/pkg/apis/monkeypatch"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -474,7 +475,7 @@ func (c *Client) updateClientScope(method, clientID, scopeID, realmName string) 
 }
 
 // MonkeyPatchKeycloakAPIClient does monkey patching to adjust the tags.
-func (c *Client) MonkeyPatchKeycloakAPIClient(specClient *v1alpha1.KeycloakAPIClient) (*monkeypatch.KeycloakAPIClient) {
+func (c *Client) MonkeyPatchKeycloakAPIClient(specClient *v1alpha1.KeycloakAPIClient) *monkeypatch.KeycloakAPIClient {
 	var patchClient monkeypatch.KeycloakAPIClient = monkeypatch.KeycloakAPIClient(*specClient)
 	return &patchClient
 }
