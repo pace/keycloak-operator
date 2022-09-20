@@ -17,13 +17,13 @@ import (
 var log = logf.Log.WithName("controller_deployment")
 
 const (
-	LivenessProbeInitialDelay  = 300
-	ReadinessProbeInitialDelay = 240
+	LivenessProbeInitialDelay  = 180
+	ReadinessProbeInitialDelay = 150
 	//10s (curl) + 10s (curl) + 2s (just in case)
 	ProbeTimeoutSeconds         = 22
 	ProbeTimeBetweenRunsSeconds = 30
-	ReadinessFailureThreshold   = 20
-	LivenessFailureThreshold    = 10
+	ReadinessFailureThreshold   = 40
+	LivenessFailureThreshold    = 30
 )
 
 func GetServiceEnvVar(suffix string) string {
