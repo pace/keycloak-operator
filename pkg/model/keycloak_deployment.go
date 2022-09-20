@@ -17,8 +17,8 @@ import (
 var log = logf.Log.WithName("controller_deployment")
 
 const (
-	LivenessProbeInitialDelay  = 180
-	ReadinessProbeInitialDelay = 150
+	LivenessProbeInitialDelay  = 300
+	ReadinessProbeInitialDelay = 240
 	//10s (curl) + 10s (curl) + 2s (just in case)
 	ProbeTimeoutSeconds         = 22
 	ProbeTimeBetweenRunsSeconds = 30
