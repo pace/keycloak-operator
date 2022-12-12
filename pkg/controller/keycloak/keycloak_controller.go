@@ -247,7 +247,7 @@ func (r *ReconcileKeycloak) ManageSuccess(instance *v1alpha1.Keycloak, currentSt
 		instance.Status.InternalURL = fmt.Sprintf("https://%v.%v.svc:%v",
 			currentState.KeycloakService.Name,
 			currentState.KeycloakService.Namespace,
-			model.KeycloakServicePort)
+			model.KeycloakServicePortSSL)
 	}
 
 	if instance.Spec.External.URL != "" { //nolint

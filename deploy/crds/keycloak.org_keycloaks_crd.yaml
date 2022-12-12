@@ -71,6 +71,11 @@ spec:
               externalAccess:
                 description: Controls external Ingress/Route settings.
                 properties:
+                  annotations:
+                    additionalProperties:
+                      type: string
+                    description: further settings to customize our ingress further
+                    type: object
                   enabled:
                     description: If set to true, the Operator will create an Ingress
                       or a Route pointing to Keycloak.
@@ -80,6 +85,18 @@ spec:
                       host instead of default value keycloak.local. Using this setting
                       in OpenShift environment will result an error. Only users with
                       special permissions are allowed to modify the hostname.
+                    type: string
+                  labels:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  path:
+                    type: string
+                  targetPort:
+                    type: string
+                  tlsEnabled:
+                    type: boolean
+                  tlsSecretName:
                     type: string
                   tlsTermination:
                     description: TLS Termination type for the external access. Setting
@@ -1104,6 +1121,9 @@ spec:
           status:
             description: KeycloakStatus defines the observed state of Keycloak.
             properties:
+              credentialSecret:
+                description: The secret where the admin credentials are to be found.
+                type: string
               externalURL:
                 description: External URL for accessing Keycloak instance from outside
                   the cluster. Is identical to external.URL if it's specified, otherwise
@@ -1137,6 +1157,7 @@ spec:
                 description: Version of Keycloak or RHSSO running on the cluster.
                 type: string
             required:
+            - credentialSecret
             - internalURL
             - message
             - phase

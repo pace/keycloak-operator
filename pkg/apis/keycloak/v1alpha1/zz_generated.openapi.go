@@ -812,8 +812,15 @@ func schema_pkg_apis_keycloak_v1alpha1_KeycloakStatus(ref common.ReferenceCallba
 							Format:      "",
 						},
 					},
+					"credentialSecret": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The secret where the admin credentials are to be found.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 				},
-				Required: []string{"phase", "message", "ready", "version", "internalURL"},
+				Required: []string{"phase", "message", "ready", "version", "internalURL", "credentialSecret"},
 			},
 		},
 	}

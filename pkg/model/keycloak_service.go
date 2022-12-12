@@ -30,7 +30,13 @@ func KeycloakService(cr *v1alpha1.Keycloak) *v1.Service {
 				{
 					Port:       KeycloakServicePort,
 					TargetPort: intstr.FromInt(KeycloakServicePort),
-					Name:       ApplicationName,
+					Name:       ApplicationName + "-http",
+					Protocol:   "TCP",
+				},
+				{
+					Port:       KeycloakServicePortSSL,
+					TargetPort: intstr.FromInt(KeycloakServicePortSSL),
+					Name:       ApplicationName + "-https",
 					Protocol:   "TCP",
 				},
 			},
@@ -51,7 +57,13 @@ func KeycloakServiceReconciled(cr *v1alpha1.Keycloak, currentState *v1.Service) 
 		{
 			Port:       KeycloakServicePort,
 			TargetPort: intstr.FromInt(KeycloakServicePort),
-			Name:       ApplicationName,
+			Name:       ApplicationName + "-http",
+			Protocol:   "TCP",
+		},
+		{
+			Port:       KeycloakServicePortSSL,
+			TargetPort: intstr.FromInt(KeycloakServicePortSSL),
+			Name:       ApplicationName + "-https",
 			Protocol:   "TCP",
 		},
 	}
