@@ -1006,7 +1006,7 @@ var _ KeycloakInterface = &Client{}
 
 //go:generate moq -out keycloakClientFactory_moq.go . KeycloakClientFactory
 
-//KeycloakClientFactory interface
+// KeycloakClientFactory interface
 type KeycloakClientFactory interface {
 	AuthenticatedClient(kc v1alpha1.Keycloak) (KeycloakInterface, error)
 }
@@ -1020,6 +1020,8 @@ func (i *LocalConfigKeycloakFactory) AuthenticatedClient(kc v1alpha1.Keycloak, i
 	if err != nil {
 		return nil, err
 	}
+
+	logrus.SetFormatter(&logrus.JSONFormatter{})
 
 	secretClient, err := kubernetes.NewForConfig(config)
 	if err != nil {
