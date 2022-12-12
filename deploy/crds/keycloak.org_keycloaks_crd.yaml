@@ -116,6 +116,22 @@ spec:
                       = false) is deprecated.
                     type: boolean
                 type: object
+              imageOverrides:
+                description: Specify images used to override default Keycloak, KeycloakInitContainer,
+                  Postgresql and Backup images.
+                properties:
+                  imagePullSecrets:
+                    items:
+                      type: string
+                    type: array
+                  keycloak:
+                    description: If set, operator will use it instead of the default
+                      Keycloak image
+                    type: string
+                type: object
+              imagePullPolicy:
+                description: ImagePullPolicy for the Containers.
+                type: string
               instances:
                 description: Number of Keycloak instances in HA mode. Default is 1.
                 type: integer
@@ -964,12 +980,7 @@ spec:
                         type: object
                     type: object
                   imagePullPolicy:
-                    default: Always
                     description: ImagePullPolicy for the Containers.
-                    enum:
-                    - Always
-                    - Never
-                    - IfNotPresent
                     type: string
                   podannotations:
                     additionalProperties:
@@ -1047,12 +1058,7 @@ spec:
                   PostgresDeployment.
                 properties:
                   imagePullPolicy:
-                    default: Always
                     description: ImagePullPolicy for the Containers.
-                    enum:
-                    - Always
-                    - Never
-                    - IfNotPresent
                     type: string
                   resources:
                     description: Resources (Requests and Limits) for the Pods.
@@ -1098,9 +1104,6 @@ spec:
           status:
             description: KeycloakStatus defines the observed state of Keycloak.
             properties:
-              credentialSecret:
-                description: The secret where the admin credentials are to be found.
-                type: string
               externalURL:
                 description: External URL for accessing Keycloak instance from outside
                   the cluster. Is identical to external.URL if it's specified, otherwise
@@ -1134,7 +1137,6 @@ spec:
                 description: Version of Keycloak or RHSSO running on the cluster.
                 type: string
             required:
-            - credentialSecret
             - internalURL
             - message
             - phase
