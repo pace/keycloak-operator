@@ -92,6 +92,12 @@ type KeycloakSpec struct {
 	// Defaults to false.
 	// +optional
 	DisableReplicasSyncing bool `json:"disableReplicasSyncing,omitempty"`
+	// ImagePullPolicy for the Containers.
+	// +optional
+	ImagePullPolicy corev1.PullPolicy `json:"imagePullPolicy,omitempty"`
+	// Specify images used to override default Keycloak, KeycloakInitContainer, Postgresql and Backup images.
+	// +optional
+	ImageOverrides KeycloakRelatedImages `json:"imageOverrides,omitempty"`
 }
 
 type DeploymentSpec struct {
@@ -99,8 +105,6 @@ type DeploymentSpec struct {
 	// +optional
 	Resources corev1.ResourceRequirements `json:"resources,omitempty"`
 	// ImagePullPolicy for the Containers.
-	// +kubebuilder:validation:Enum={Always,Never,IfNotPresent}
-	// +kubebuilder:default:=Always
 	// +optional
 	ImagePullPolicy corev1.PullPolicy `json:"imagePullPolicy,omitempty"`
 }
@@ -257,8 +261,6 @@ type KeycloakStatus struct {
 	InternalURL string `json:"internalURL"`
 	// External URL for accessing Keycloak instance from outside the cluster. Is identical to external.URL if it's specified, otherwise is computed (e.g. from Ingress).
 	ExternalURL string `json:"externalURL,omitempty"`
-	// The secret where the admin credentials are to be found.
-	CredentialSecret string `json:"credentialSecret"`
 }
 
 type StatusPhase string
@@ -297,4 +299,11 @@ func init() {
 
 func (i *Keycloak) UpdateStatusSecondaryResources(kind string, resourceName string) {
 	i.Status.SecondaryResources = UpdateStatusSecondaryResources(i.Status.SecondaryResources, kind, resourceName)
+}
+
+type KeycloakRelatedImages struct {
+	// If set, operator will use it instead of the default Keycloak image
+	// +optional
+	Keycloak         string   `json:"keycloak,omitempty"`
+	ImagePullSecrets []string `json:"imagePullSecrets,omitempty"`
 }

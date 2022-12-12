@@ -14,12 +14,13 @@ import (
 )
 
 const (
-	LivenessProbeInitialDelay  = 30
-	ReadinessProbeInitialDelay = 40
+	LivenessProbeInitialDelay  = 180 // 30
+	ReadinessProbeInitialDelay = 150 // 40
 	//10s (curl) + 10s (curl) + 2s (just in case)
 	ProbeTimeoutSeconds         = 22
 	ProbeTimeBetweenRunsSeconds = 30
-	ProbeFailureThreshold       = 10
+	ReadinessFailureThreshold   = 40
+	LivenessFailureThreshold    = 30
 )
 
 func GetServiceEnvVar(suffix string) string {
@@ -225,12 +226,14 @@ func KeycloakDeployment(cr *v1alpha1.Keycloak, dbSecret *v1.Secret, dbSSLSecret 
 					Annotations: podAnnotations,
 				},
 				Spec: v1.PodSpec{
-					InitContainers: KeycloakExtensionsInitContainers(cr),
-					Volumes:        KeycloakVolumes(cr, dbSSLSecret),
+					InitContainers:   KeycloakExtensionsInitContainers(cr),
+					Volumes:          KeycloakVolumes(cr, dbSSLSecret),
+					ImagePullSecrets: GetKeycloakImagePullSecrets(cr),
 					Containers: []v1.Container{
 						{
-							Name:  KeycloakDeploymentName,
-							Image: Images.Images[KeycloakImage],
+							Name: KeycloakDeploymentName,
+							//Image: Images.Images[KeycloakImage],
+							Image: GetKeycloakImage(cr),
 							Ports: []v1.ContainerPort{
 								{
 									ContainerPort: KeycloakServicePort,
@@ -475,7 +478,7 @@ func livenessProbe() *v1.Probe {
 		InitialDelaySeconds: LivenessProbeInitialDelay,
 		TimeoutSeconds:      ProbeTimeoutSeconds,
 		PeriodSeconds:       ProbeTimeBetweenRunsSeconds,
-		FailureThreshold:    ProbeFailureThreshold,
+		FailureThreshold:    LivenessFailureThreshold,
 	}
 }
 
@@ -493,7 +496,7 @@ func readinessProbe() *v1.Probe {
 		InitialDelaySeconds: ReadinessProbeInitialDelay,
 		TimeoutSeconds:      ProbeTimeoutSeconds,
 		PeriodSeconds:       ProbeTimeBetweenRunsSeconds,
-		FailureThreshold:    ProbeFailureThreshold,
+		FailureThreshold:    ReadinessFailureThreshold,
 	}
 }
 
@@ -545,4 +548,28 @@ func GetLabelsSelector() map[string]string {
 		"app":       ApplicationName,
 		"component": KeycloakDeploymentComponent,
 	}
+}
+
+func GetKeycloakImagePullSecrets(cr *v1alpha1.Keycloak) []v1.LocalObjectReference {
+	if cr.Spec.ImageOverrides.ImagePullSecrets != nil && len(cr.Spec.ImageOverrides.ImagePullSecrets) > 0 {
+		imagePullSecrets := []v1.LocalObjectReference{}
+		for _, v := range cr.Spec.ImageOverrides.ImagePullSecrets {
+			imagePullSecrets = append(imagePullSecrets, v1.LocalObjectReference{
+				Name: v,
+			})
+		}
+
+		return imagePullSecrets
+	}
+
+	return []v1.LocalObjectReference{}
+}
+
+// GetKeycloakImage checks overrides property to decide the Keycloak image
+func GetKeycloakImage(cr *v1alpha1.Keycloak) string {
+	if cr.Spec.ImageOverrides.Keycloak != "" {
+		return cr.Spec.ImageOverrides.Keycloak
+	}
+
+	return Images.Images[KeycloakImage]
 }
