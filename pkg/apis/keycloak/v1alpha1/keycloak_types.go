@@ -205,6 +205,14 @@ type KeycloakExternalAccess struct {
 	// allowed to modify the hostname.
 	// +optional
 	Host string `json:"host,omitempty"`
+
+	// further settings to customize our ingress further
+	Annotations   map[string]string `json:"annotations,omitempty"`
+	Labels        map[string]string `json:"labels,omitempty"`
+	Path          string            `json:"path,omitempty"`
+	TLSEnabled    bool              `json:"tlsEnabled,omitempty"`
+	TLSSecretName string            `json:"tlsSecretName,omitempty"`
+	TargetPort    string            `json:"targetPort,omitempty"`
 }
 
 type KeycloakExternalDatabase struct {

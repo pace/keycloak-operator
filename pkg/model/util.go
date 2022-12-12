@@ -274,3 +274,14 @@ func AddPodAnnotations(cr *v1alpha1.Keycloak, annotations map[string]string) map
 
 	return mergedAnnotations
 }
+
+func MergeAnnotations(requested map[string]string, existing map[string]string) map[string]string {
+	if existing == nil {
+		return requested
+	}
+
+	for k, v := range requested {
+		existing[k] = v
+	}
+	return existing
+}

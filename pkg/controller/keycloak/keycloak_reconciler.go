@@ -362,13 +362,15 @@ func (i *KeycloakReconciler) getKeycloakMetricsRouteDesiredState(clusterState *c
 func (i *KeycloakReconciler) getKeycloakIngressDesiredState(clusterState *common.ClusterState, cr *kc.Keycloak) common.ClusterAction {
 	if clusterState.KeycloakIngress == nil {
 		return common.GenericCreateAction{
-			Ref: model.KeycloakIngress(cr),
+			//Ref: model.KeycloakIngress(cr),
+			Ref: model.KeycloakIngressLegacy(cr),
 			Msg: "Create Keycloak Ingress",
 		}
 	}
 
 	return common.GenericUpdateAction{
-		Ref: model.KeycloakIngressReconciled(cr, clusterState.KeycloakIngress),
+		//Ref: model.KeycloakIngressReconciled(cr, clusterState.KeycloakIngress),
+		Ref: model.KeycloakIngressLegacyReconciled(cr, clusterState.KeycloakIngress),
 		Msg: "Update Keycloak Ingress",
 	}
 }

@@ -76,6 +76,11 @@ func (i *RecreateMigrator) Migrate(cr *v1alpha1.Keycloak, currentState *common.C
 
 	if needsImageMigration(cr, currentState) {
 		desiredImage := model.Profiles.GetKeycloakOrRHSSOImage(cr)
+
+		if cr.Spec.ImageOverrides.Keycloak != "" {
+			desiredImage = cr.Spec.ImageOverrides.Keycloak
+		}
+
 		log.Info(fmt.Sprintf("Performing migration from '%s' to '%s'", currentState.KeycloakDeployment.Spec.Template.Spec.Containers[0].Image, desiredImage))
 
 		// The backup should be made when Keycloak container is down.
@@ -117,6 +122,11 @@ func needsImageMigration(cr *v1alpha1.Keycloak, currentState *common.ClusterStat
 	}
 	deployedImage := currentState.KeycloakDeployment.Spec.Template.Spec.Containers[0].Image
 	currentImage := model.Profiles.GetKeycloakOrRHSSOImage(cr)
+
+	if cr.Spec.ImageOverrides.Keycloak != "" {
+		currentImage = cr.Spec.ImageOverrides.Keycloak
+	}
+
 	return deployedImage != currentImage
 }
 

@@ -295,10 +295,12 @@ func KeycloakDeploymentReconciled(cr *v1alpha1.Keycloak, currentState *v13.State
 		reconciled.Spec.Replicas = SanitizeNumberOfReplicas(cr.Spec.Instances, false)
 	}
 	reconciled.Spec.Template.Spec.Volumes = KeycloakVolumes(cr, dbSSLSecret)
+	reconciled.Spec.Template.Spec.ImagePullSecrets = GetKeycloakImagePullSecrets(cr)
 	reconciled.Spec.Template.Spec.Containers = []v1.Container{
 		{
-			Name:    KeycloakDeploymentName,
-			Image:   Images.Images[KeycloakImage],
+			Name: KeycloakDeploymentName,
+			//Image:   Images.Images[KeycloakImage],
+			Image:   GetKeycloakImage(cr),
 			Args:    cr.Spec.KeycloakDeploymentSpec.Experimental.Args,
 			Command: cr.Spec.KeycloakDeploymentSpec.Experimental.Command,
 			Ports: []v1.ContainerPort{
