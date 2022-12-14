@@ -52,8 +52,8 @@ func (c *Client) create(obj T, resourcePath, resourceName string) (string, error
 		return "", nil
 	}
 
-	logrus.Infof(fmt.Sprintf("%sadmin/%s", c.GetFullKeycloakPath(), resourcePath))
-	logrus.Infof("Calling POST with body: %s", string(jsonValue))
+	logrus.Debugf(fmt.Sprintf("%sadmin/%s", c.GetFullKeycloakPath(), resourcePath))
+	logrus.Debugf("Calling POST with body: %s", string(jsonValue))
 
 	req, err := http.NewRequest(
 		"POST",
@@ -422,8 +422,8 @@ func (c *Client) update(obj T, resourcePath, resourceName string) error {
 		return nil
 	}
 
-	logrus.Infof(fmt.Sprintf("%sadmin/%s", c.GetFullKeycloakPath(), resourcePath))
-	logrus.Infof("Calling PUT with body: %s", string(jsonValue))
+	logrus.Debugf(fmt.Sprintf("%sadmin/%s", c.GetFullKeycloakPath(), resourcePath))
+	logrus.Debugf("Calling PUT with body: %s", string(jsonValue))
 
 	req, err := http.NewRequest(
 		"PUT",
