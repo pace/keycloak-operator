@@ -93,9 +93,9 @@ type KeycloakAPIClient struct {
 	// Default Client roles.
 	// +optional
 	DefaultRoles []string `json:"defaultRoles,omitempty"`
-	// A list of valid Redirection URLs.
+	// A list of valid Redirection URLs. Pace-Fix: => was before omitempty
 	// +optional
-	RedirectUris []string `json:"redirectUris,omitempty"`
+	RedirectUris []string `json:"redirectUris"`
 	// A list of valid Web Origins.
 	// +optional
 	WebOrigins []string `json:"webOrigins,omitempty"`

@@ -3,6 +3,7 @@ module github.com/keycloak/keycloak-operator
 require (
 	github.com/coreos/prometheus-operator v0.40.0
 	github.com/go-openapi/spec v0.19.7
+	github.com/google/uuid v1.1.2 // indirect
 	github.com/integr8ly/grafana-operator/v3 v3.6.0
 	github.com/json-iterator/go v1.1.10
 	github.com/openshift/api v3.9.0+incompatible

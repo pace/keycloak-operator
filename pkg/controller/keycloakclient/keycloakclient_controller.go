@@ -3,6 +3,7 @@ package keycloakclient
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"time"
 
 	"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
@@ -109,6 +110,8 @@ func (r *ReconcileKeycloakClient) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{}, err
 	}
 
+	reqLogger.Info("Adjusting Keycloak Client Defaults")
+
 	r.adjustCrDefaults(instance)
 
 	// The client may be applicable to multiple keycloak instances,
@@ -118,6 +121,7 @@ func (r *ReconcileKeycloakClient) Reconcile(request reconcile.Request) (reconcil
 		return r.ManageError(instance, err)
 	}
 	log.Info(fmt.Sprintf("found %v matching realm(s) for client %v/%v", len(realms.Items), instance.Namespace, instance.Name))
+
 	for _, realm := range realms.Items {
 		keycloaks, err := common.GetMatchingKeycloaks(r.context, r.client, realm.Spec.InstanceSelector)
 		if err != nil {
@@ -168,16 +172,33 @@ func (r *ReconcileKeycloakClient) Reconcile(request reconcile.Request) (reconcil
 }
 
 // Fills the CR with default values. Nils are not acceptable for Kubernetes.
-func (r *ReconcileKeycloakClient) adjustCrDefaults(cr *kc.KeycloakClient) {
+func (r *ReconcileKeycloakClient) adjustCrDefaults(cr *kc.KeycloakClient) (updateResource bool) {
+	if cr.Spec.Client.ID == "" {
+		cr.Spec.Client.ID = uuid.New().String()
+		updateResource = true
+
+		log.Info(fmt.Sprintf("client ID is not specified, using %v", cr.Spec.Client.ID))
+	}
+
+	if cr.Spec.Client.RedirectUris == nil {
+		updateResource = true
+		cr.Spec.Client.RedirectUris = []string{"/*"}
+	}
+
 	if cr.Spec.Client.Attributes == nil {
+		updateResource = true
 		cr.Spec.Client.Attributes = make(map[string]string)
 	}
 	if cr.Spec.Client.Access == nil {
+		updateResource = true
 		cr.Spec.Client.Access = make(map[string]bool)
 	}
 	if cr.Spec.Client.AuthenticationFlowBindingOverrides == nil {
+		updateResource = true
 		cr.Spec.Client.AuthenticationFlowBindingOverrides = make(map[string]string)
 	}
+
+	return
 }
 
 func (r *ReconcileKeycloakClient) manageSuccess(client *kc.KeycloakClient, deleted bool) error {
