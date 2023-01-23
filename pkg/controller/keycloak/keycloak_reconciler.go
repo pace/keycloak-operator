@@ -369,8 +369,8 @@ func (i *KeycloakReconciler) getKeycloakIngressDesiredState(clusterState *common
 	}
 
 	return common.GenericUpdateAction{
-		//Ref: model.KeycloakIngressReconciled(cr, clusterState.KeycloakIngress),
-		Ref: model.KeycloakIngressLegacyReconciled(cr, clusterState.KeycloakIngress),
+		Ref: model.KeycloakIngressReconciled(cr, clusterState.KeycloakIngress),
+		//Ref: model.KeycloakIngressLegacyReconciled(cr, clusterState.KeycloakIngress),
 		Msg: "Update Keycloak Ingress",
 	}
 }

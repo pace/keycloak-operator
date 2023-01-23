@@ -86,6 +86,7 @@ func GetIngressAnnotations(cr *kc.Keycloak, existing map[string]string) map[stri
 	}
 	return MergeAnnotations(cr.Spec.ExternalAccess.Annotations, existing)
 }
+
 func KeycloakIngressLegacyReconciled(cr *kc.Keycloak, currentState *v1beta1.Ingress) *v1beta1.Ingress {
 	reconciled := currentState.DeepCopy()
 	reconciled.Labels = GetIngressLabels(cr)

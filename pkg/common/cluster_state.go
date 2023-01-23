@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	v14 "k8s.io/api/networking/v1"
 	v1beta12 "k8s.io/api/policy/v1beta1"
 
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
@@ -14,7 +15,6 @@ import (
 	v13 "github.com/openshift/api/route/v1"
 	v12 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/api/extensions/v1beta1"
 	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -60,8 +60,8 @@ type ClusterState struct {
 	KeycloakMonitoringService       *v1.Service
 	KeycloakDeployment              *v12.StatefulSet
 	KeycloakAdminSecret             *v1.Secret
-	//KeycloakIngress                 *v14.Ingress
-	KeycloakIngress            *v1beta1.Ingress
+	KeycloakIngress                 *v14.Ingress
+	//KeycloakIngress            *v1beta1.Ingress
 	KeycloakRoute              *v13.Route
 	KeycloakMetricsRoute       *v13.Route
 	PostgresqlServiceEndpoints *v1.Endpoints
@@ -510,7 +510,8 @@ func (i *ClusterState) readKeycloakMetricsRouteCurrentState(context context.Cont
 }
 
 func (i *ClusterState) readKeycloakIngressCurrentState(context context.Context, cr *kc.Keycloak, controllerClient client.Client) error {
-	keycloakIngress := model.KeycloakIngressLegacy(cr)
+	//keycloakIngress := model.KeycloakIngressLegacy(cr)
+	keycloakIngress := model.KeycloakIngress(cr)
 	keycloakIngressSelector := model.KeycloakIngressSelector(cr)
 
 	err := controllerClient.Get(context, keycloakIngressSelector, keycloakIngress)
