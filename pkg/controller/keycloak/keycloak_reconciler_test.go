@@ -151,9 +151,9 @@ func TestKeycloakReconciler_Test_Updating_RHSSO(t *testing.T) {
 		KeycloakDiscoveryService:        model.KeycloakDiscoveryService(cr),
 		KeycloakDeployment:              model.RHSSODeployment(cr, model.DatabaseSecret(cr), nil),
 		KeycloakAdminSecret:             model.KeycloakAdminSecret(cr),
-		//KeycloakIngress:                 model.KeycloakIngress(cr),
-		KeycloakIngress: model.KeycloakIngressLegacy(cr),
-		KeycloakProbes:  model.KeycloakProbes(cr),
+		KeycloakIngress:                 model.KeycloakIngress(cr),
+		//KeycloakIngress: model.KeycloakIngressLegacy(cr),
+		KeycloakProbes: model.KeycloakProbes(cr),
 	}
 
 	// when
