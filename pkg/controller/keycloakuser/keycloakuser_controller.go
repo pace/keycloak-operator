@@ -3,7 +3,6 @@ package keycloakuser
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/keycloak/keycloak-operator/pkg/common"
 
@@ -24,10 +23,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
-const (
-	ControllerName           = "controller_keycloakuser"
-	RequeueDelayErrorSeconds = 5
-)
+const ControllerName = "controller_keycloakuser"
+
+var RequeueDelayErrorSeconds = common.GetRequeueDelayError(common.DefaultRequeueDelayErrorSeconds)
 
 var log = logf.Log.WithName("controller_keycloakuser")
 
@@ -183,11 +181,14 @@ func (r *ReconcileKeycloakUser) Reconcile(request reconcile.Request) (reconcile.
 }
 
 func (r *ReconcileKeycloakUser) manageSuccess(user *kc.KeycloakUser, deleted bool) error {
-	user.Status.Phase = kc.UserPhaseReconciled
+	// Only update status if it actually changed to avoid triggering unnecessary watch events
+	if user.Status.Phase != kc.UserPhaseReconciled {
+		user.Status.Phase = kc.UserPhaseReconciled
 
-	err := r.client.Status().Update(r.context, user)
-	if err != nil {
-		log.Error(err, "unable to update status")
+		err := r.client.Status().Update(r.context, user)
+		if err != nil {
+			log.Error(err, "unable to update status")
+		}
 	}
 
 	// Finalizer already set?
@@ -237,6 +238,6 @@ func (r *ReconcileKeycloakUser) ManageError(user *kc.KeycloakUser, issue error) 
 	}
 
 	return reconcile.Result{
-		RequeueAfter: RequeueDelayErrorSeconds * time.Second,
+		RequeueAfter: RequeueDelayErrorSeconds,
 	}, nil
 }

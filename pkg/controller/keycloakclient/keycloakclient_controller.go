@@ -26,10 +26,11 @@ import (
 var log = logf.Log.WithName("controller_keycloakclient")
 
 const (
-	ClientFinalizer          = "client.cleanup"
-	RequeueDelayErrorSeconds = 5
-	ControllerName           = "keycloakclient-controller"
+	ClientFinalizer = "client.cleanup"
+	ControllerName  = "keycloakclient-controller"
 )
+
+var RequeueDelayErrorSeconds = common.GetRequeueDelayError(common.DefaultRequeueDelayErrorSeconds)
 
 // Add creates a new KeycloakClient Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
@@ -196,13 +197,16 @@ func (r *ReconcileKeycloakClient) adjustCrDefaults(cr *kc.KeycloakClient) (updat
 }
 
 func (r *ReconcileKeycloakClient) manageSuccess(client *kc.KeycloakClient, deleted bool) error {
-	client.Status.Ready = true
-	client.Status.Message = ""
-	client.Status.Phase = v1alpha1.PhaseReconciling
+	// Only update status if it actually changed to avoid triggering unnecessary watch events
+	if client.Status.Ready != true || client.Status.Message != "" || client.Status.Phase != v1alpha1.PhaseReconciling {
+		client.Status.Ready = true
+		client.Status.Message = ""
+		client.Status.Phase = v1alpha1.PhaseReconciling
 
-	err := r.client.Status().Update(r.context, client)
-	if err != nil {
-		log.Error(err, "unable to update status")
+		err := r.client.Status().Update(r.context, client)
+		if err != nil {
+			log.Error(err, "unable to update status")
+		}
 	}
 
 	// Finalizer already set?
@@ -260,6 +264,5 @@ func (r *ReconcileKeycloakClient) ManageError(realm *kc.KeycloakClient, issue er
 
 	return reconcile.Result{
 		RequeueAfter: RequeueDelayErrorSeconds,
-		Requeue:      true,
 	}, nil
 }
