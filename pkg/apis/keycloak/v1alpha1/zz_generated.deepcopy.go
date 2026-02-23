@@ -842,9 +842,9 @@ func (in *KeycloakSpec) DeepCopyInto(out *KeycloakSpec) {
 	in.ExternalAccess.DeepCopyInto(&out.ExternalAccess)
 	if in.ExtraEnv != nil {
 		in, out := &in.ExtraEnv, &out.ExtraEnv
-		*out = make(map[string]string, len(*in))
-		for key, val := range *in {
-			(*out)[key] = val
+		*out = make([]corev1.EnvVar, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	out.StartupScript = in.StartupScript

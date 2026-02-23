@@ -3,7 +3,6 @@ package keycloak
 import (
 	"context"
 	"fmt"
-	"time"
 
 	v1beta12 "k8s.io/api/policy/v1beta1"
 
@@ -37,10 +36,11 @@ import (
 
 var log = logf.Log.WithName("controller_keycloak")
 
-const (
-	RequeueDelaySeconds      = 30 * time.Second
-	RequeueDelayErrorSeconds = 5 * time.Second
-	ControllerName           = "keycloak-controller"
+const ControllerName = "keycloak-controller"
+
+var (
+	RequeueDelaySeconds      = common.GetRequeueDelay(common.DefaultRequeueDelaySeconds)
+	RequeueDelayErrorSeconds = common.GetRequeueDelayError(common.DefaultRequeueDelayErrorSeconds)
 )
 
 // Add creates a new Keycloak Controller and adds it to the Manager. The Manager will set fields on the Controller
@@ -224,38 +224,49 @@ func (r *ReconcileKeycloak) ManageSuccess(instance *v1alpha1.Keycloak, currentSt
 		return r.ManageError(instance, err)
 	}
 
-	instance.Status.Ready = resourcesReady
-	instance.Status.Message = ""
-
-	// If resources are ready and we have not errored before now, we are in a reconciling phase
+	// Compute desired status
+	desiredPhase := v1alpha1.PhaseInitialising
 	if resourcesReady {
-		instance.Status.Phase = v1alpha1.PhaseReconciling
-	} else {
-		instance.Status.Phase = v1alpha1.PhaseInitialising
+		desiredPhase = v1alpha1.PhaseReconciling
 	}
 
-	// Make this keycloaks url public to allow access via the client
+	desiredInternalURL := instance.Status.InternalURL
 	if currentState.KeycloakRoute != nil && currentState.KeycloakRoute.Spec.Host != "" {
-		instance.Status.InternalURL = fmt.Sprintf("https://%v", currentState.KeycloakRoute.Spec.Host)
+		desiredInternalURL = fmt.Sprintf("https://%v", currentState.KeycloakRoute.Spec.Host)
 	} else if currentState.KeycloakService != nil && currentState.KeycloakService.Spec.ClusterIP != "" {
-		instance.Status.InternalURL = fmt.Sprintf("https://%v.%v.svc:%v",
+		desiredInternalURL = fmt.Sprintf("https://%v.%v.svc:%v",
 			currentState.KeycloakService.Name,
 			currentState.KeycloakService.Namespace,
 			model.KeycloakServicePortSSL)
 	}
 
-	// Let the clients know where the admin credentials are stored
+	desiredCredentialSecret := instance.Status.CredentialSecret
 	if currentState.KeycloakAdminSecret != nil {
-		instance.Status.CredentialSecret = currentState.KeycloakAdminSecret.Name
+		desiredCredentialSecret = currentState.KeycloakAdminSecret.Name
 	}
 
-	err = r.client.Status().Update(r.context, instance)
-	if err != nil {
-		log.Error(err, "unable to update status")
-		return reconcile.Result{
-			RequeueAfter: RequeueDelayErrorSeconds,
-			Requeue:      true,
-		}, nil
+	// Only update status if it actually changed to avoid triggering unnecessary watch events
+	statusChanged := instance.Status.Ready != resourcesReady ||
+		instance.Status.Message != "" ||
+		instance.Status.Phase != desiredPhase ||
+		instance.Status.InternalURL != desiredInternalURL ||
+		instance.Status.CredentialSecret != desiredCredentialSecret
+
+	if statusChanged {
+		instance.Status.Ready = resourcesReady
+		instance.Status.Message = ""
+		instance.Status.Phase = desiredPhase
+		instance.Status.InternalURL = desiredInternalURL
+		instance.Status.CredentialSecret = desiredCredentialSecret
+
+		err = r.client.Status().Update(r.context, instance)
+		if err != nil {
+			log.Error(err, "unable to update status")
+			return reconcile.Result{
+				RequeueAfter: RequeueDelayErrorSeconds,
+				Requeue:      true,
+			}, nil
+		}
 	}
 
 	log.Info("desired cluster state met")

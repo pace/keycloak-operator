@@ -3,7 +3,6 @@ package keycloakrealm
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	kc "github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
@@ -23,10 +22,11 @@ import (
 )
 
 const (
-	RealmFinalizer           = "realm.cleanup"
-	RequeueDelayErrorSeconds = 5
-	ControllerName           = "controller_keycloakrealm"
+	RealmFinalizer = "realm.cleanup"
+	ControllerName = "controller_keycloakrealm"
 )
+
+var RequeueDelayErrorSeconds = common.GetRequeueDelayError(common.DefaultRequeueDelayErrorSeconds)
 
 var log = logf.Log.WithName(ControllerName)
 
@@ -172,13 +172,16 @@ func (r *ReconcileKeycloakRealm) Reconcile(request reconcile.Request) (reconcile
 }
 
 func (r *ReconcileKeycloakRealm) manageSuccess(realm *kc.KeycloakRealm, deleted bool) error {
-	realm.Status.Ready = true
-	realm.Status.Message = ""
-	realm.Status.Phase = v1alpha1.PhaseReconciling
+	// Only update status if it actually changed to avoid triggering unnecessary watch events
+	if realm.Status.Ready != true || realm.Status.Message != "" || realm.Status.Phase != v1alpha1.PhaseReconciling {
+		realm.Status.Ready = true
+		realm.Status.Message = ""
+		realm.Status.Phase = v1alpha1.PhaseReconciling
 
-	err := r.client.Status().Update(r.context, realm)
-	if err != nil {
-		log.Error(err, "unable to update status")
+		err := r.client.Status().Update(r.context, realm)
+		if err != nil {
+			log.Error(err, "unable to update status")
+		}
 	}
 
 	// Finalizer already set?
@@ -235,7 +238,6 @@ func (r *ReconcileKeycloakRealm) ManageError(realm *kc.KeycloakRealm, issue erro
 	}
 
 	return reconcile.Result{
-		RequeueAfter: RequeueDelayErrorSeconds * time.Second,
-		Requeue:      true,
+		RequeueAfter: RequeueDelayErrorSeconds,
 	}, nil
 }
