@@ -108,7 +108,7 @@ rules:
     verbs:
       - update
   - apiGroups:
-      - keycloak.org
+      - legacy.k8s.keycloak.org
     resources:
       - keycloaks
       - keycloaks/status
