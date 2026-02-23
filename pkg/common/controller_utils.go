@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/keycloak/keycloak-operator/pkg/apis/keycloak/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -59,19 +60,31 @@ func GetStateFieldName(controllerName string, kind string) string {
 	return controllerName + "-watch-" + kind
 }
 
-// Try to get a list of keycloak instances that match the selector specified on the realm
+// GetMatchingKeycloaks returns a synthetic Keycloak instance based on env vars
+// KEYCLOAK_INTERNAL_URL and KEYCLOAK_CREDENTIAL_SECRET. The Keycloak CRD lives
+// under k8s.keycloak.org/v2alpha1 (managed by the Quarkus operator), so we cannot
+// query it from this legacy operator. Instead we read the connection info from the
+// ExternalKeycloak CR via env vars injected into the deployment.
 func GetMatchingKeycloaks(ctx context.Context, c client.Client, labelSelector *v1.LabelSelector) (v1alpha1.KeycloakList, error) {
-	var list v1alpha1.KeycloakList
-	opts := []client.ListOption{
-		client.MatchingLabels(labelSelector.MatchLabels),
+	internalURL := os.Getenv("KEYCLOAK_INTERNAL_URL")
+	credentialSecret := os.Getenv("KEYCLOAK_CREDENTIAL_SECRET")
+	namespace := os.Getenv("KEYCLOAK_NAMESPACE")
+
+	if internalURL == "" || credentialSecret == "" {
+		return v1alpha1.KeycloakList{}, fmt.Errorf("KEYCLOAK_INTERNAL_URL and KEYCLOAK_CREDENTIAL_SECRET must be set")
+	}
+	if namespace == "" {
+		namespace = "keycloak"
 	}
 
-	err := c.List(ctx, &list, opts...)
-	if err != nil {
-		return list, err
-	}
+	kc := v1alpha1.Keycloak{}
+	kc.Namespace = namespace
+	kc.Name = "external-keycloak"
+	kc.Status.InternalURL = internalURL
+	kc.Status.CredentialSecret = credentialSecret
+	kc.Status.Ready = true
 
-	return list, nil
+	return v1alpha1.KeycloakList{Items: []v1alpha1.Keycloak{kc}}, nil
 }
 
 // Try to get a list of keycloak instances that match the selector specified on the realm
