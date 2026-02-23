@@ -107,7 +107,7 @@ rules:
       - update
       - watch
   - apiGroups:
-      - legacy.k8s.keycloak.org
+      - keycloak.org
     resources:
       - keycloaks
       - keycloaks/status
