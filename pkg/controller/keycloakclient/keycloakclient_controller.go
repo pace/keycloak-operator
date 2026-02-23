@@ -185,12 +185,13 @@ func (r *ReconcileKeycloakClient) adjustCrDefaults(cr *kc.KeycloakClient) (updat
 		updateResource = true
 		log.Info(fmt.Sprintf("client ID is not specified, using %v", cr.Spec.Client.ID))
 	}
+	// Only set in-memory defaults for nil maps, but don't trigger an update.
+	// Kubernetes strips empty maps on storage (omitempty), so persisting these
+	// would cause an infinite reconcile loop: set empty map → K8s strips → nil → repeat.
 	if cr.Spec.Client.Attributes == nil {
-		updateResource = true
 		cr.Spec.Client.Attributes = make(map[string]string)
 	}
 	if cr.Spec.Client.Access == nil {
-		updateResource = true
 		cr.Spec.Client.Access = make(map[string]bool)
 	}
 	return
